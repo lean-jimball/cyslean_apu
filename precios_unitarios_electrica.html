@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CySlean APU — Precios Unitarios Eléctricos</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- SheetJS para Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --surface3: #1f2d42;
+  --accent: #00d4ff;
+  --accent2: #ff6b00;
+  --accent3: #00ff9d;
+  --danger: #ff3b5c;
+  --text: #e8edf5;
+  --text2: #8899bb;
+  --text3: #4a5568;
+  --border: #1e3050;
+  --border2: #2a4060;
+  --gold: #ffd166;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.scanline{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.015) 2px,rgba(0,212,255,0.015) 4px);z-index:1000}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#0a0e1a 0%,#0d1528 100%);border-bottom:2px solid var(--accent);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:var(--accent);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;color:#000;font-weight:700;font-size:14px;font-family:'IBM Plex Mono',monospace}
+.logo-text{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:18px;color:var(--accent);letter-spacing:3px}
+.logo-sub{font-size:10px;color:var(--text2);letter-spacing:2px;font-family:'IBM Plex Mono',monospace}
+.header-right{display:flex;align-items:center;gap:12px}
+.badge{background:rgba(0,212,255,0.1);border:1px solid var(--accent);color:var(--accent);padding:4px 10px;border-radius:4px;font-size:11px;font-family:'IBM Plex Mono',monospace}
+
+/* NAV TABS */
+.nav-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;gap:0}
+.tab{padding:14px 22px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-bottom:3px solid transparent;transition:all .2s;display:flex;align-items:center;gap:7px;letter-spacing:.5px}
+.tab:hover{color:var(--text);background:rgba(0,212,255,0.05)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(0,212,255,0.05)}
+.tab .icon{font-size:15px}
+
+/* MAIN */
+.main{padding:24px;max-width:1600px;margin:0 auto}
+.page{display:none}
+.page.active{display:block}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+.card-title{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.card-body{padding:18px}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:500;font-family:'IBM Plex Sans',sans-serif;display:inline-flex;align-items:center;gap:7px;transition:all .15s;letter-spacing:.3px}
+.btn-primary{background:var(--accent);color:#000;font-weight:600}
+.btn-primary:hover{background:#00b8e0;transform:translateY(-1px)}
+.btn-secondary{background:var(--surface3);color:var(--text);border:1px solid var(--border2)}
+.btn-secondary:hover{background:var(--surface2);border-color:var(--accent)}
+.btn-danger{background:rgba(255,59,92,0.1);color:var(--danger);border:1px solid rgba(255,59,92,0.3)}
+.btn-danger:hover{background:rgba(255,59,92,0.2)}
+.btn-success{background:var(--accent3);color:#000;font-weight:600}
+.btn-success:hover{background:#00e589}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-orange{background:var(--accent2);color:#fff;font-weight:600}
+.btn-orange:hover{background:#e05d00}
+
+/* FORMS */
+.form-row{display:grid;gap:14px;margin-bottom:14px}
+.form-row.cols2{grid-template-columns:1fr 1fr}
+.form-row.cols3{grid-template-columns:1fr 1fr 1fr}
+.form-row.cols4{grid-template-columns:1fr 1fr 1fr 1fr}
+.form-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:5px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
+.form-group input[readonly]{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:600;background:rgba(0,212,255,0.05)}
+.form-group select option{background:var(--surface2)}
+
+/* TABLES */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:var(--surface3)}
+th{padding:10px 12px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;border-bottom:2px solid var(--border2);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:rgba(0,212,255,0.03)}
+.tr-total{background:rgba(0,212,255,0.08)!important;border-top:2px solid var(--accent)}
+.tr-total td{color:var(--accent);font-weight:700;font-family:'IBM Plex Mono',monospace}
+.number{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px}
+.tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:600}
+.tag-mat{background:rgba(0,212,255,0.15);color:var(--accent)}
+.tag-mo{background:rgba(0,255,157,0.15);color:var(--accent3)}
+.tag-eq{background:rgba(255,107,0,0.15);color:var(--accent2)}
+.tag-sub{background:rgba(255,209,102,0.15);color:var(--gold)}
+
+/* DASHBOARD STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.blue::before{background:var(--accent)}
+.stat-card.orange::before{background:var(--accent2)}
+.stat-card.green::before{background:var(--accent3)}
+.stat-card.gold::before{background:var(--gold)}
+.stat-label{font-size:11px;color:var(--text2);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.stat-value{font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace}
+.stat-value.blue{color:var(--accent)}
+.stat-value.orange{color:var(--accent2)}
+.stat-value.green{color:var(--accent3)}
+.stat-value.gold{color:var(--gold)}
+.stat-sub{font-size:12px;color:var(--text2);margin-top:4px}
+
+/* APU EDITOR */
+.apu-section{margin-bottom:16px}
+.apu-section-title{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.cost-bar{height:6px;border-radius:3px;margin-top:4px;transition:width .4s}
+.input-num{width:100%;background:transparent;border:none;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:right;padding:4px}
+.input-num:focus{outline:none;color:var(--accent)}
+.editable-cell{cursor:pointer;transition:background .15s;border-radius:3px;padding:2px 4px}
+.editable-cell:hover{background:rgba(0,212,255,0.1)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:10px;width:90%;max-width:700px;max-height:90vh;overflow-y:auto;animation:modalIn .2s ease}
+@keyframes modalIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:var(--accent)}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+.close-btn{background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px;line-height:1;padding:2px}
+.close-btn:hover{color:var(--danger)}
+
+/* SEARCH BAR */
+.search-bar{display:flex;gap:10px;margin-bottom:18px;align-items:center}
+.search-input{flex:1;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:9px 14px;border-radius:5px;font-size:13px;font-family:'IBM Plex Sans',sans-serif}
+.search-input:focus{outline:none;border-color:var(--accent)}
+.filter-chip{padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s}
+.filter-chip.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,0.1)}
+
+/* NOTIFY */
+.notify{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.notif{background:var(--surface);border-left:4px solid var(--accent3);border:1px solid var(--border2);border-left:4px solid var(--accent3);padding:12px 16px;border-radius:6px;font-size:13px;animation:slideIn .3s ease;max-width:300px}
+.notif.error{border-left-color:var(--danger)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* PROGRESS */
+.progress-container{margin:10px 0}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px}
+.progress-bar{height:8px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .4s}
+
+/* MISC */
+.divider{height:1px;background:var(--border);margin:16px 0}
+.empty-state{text-align:center;padding:48px;color:var(--text3)}
+.empty-state .icon{font-size:40px;margin-bottom:12px}
+.empty-state p{font-size:13px}
+.flex{display:flex;align-items:center;gap:10px}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-8{gap:8px}
+.mt16{margin-top:16px}
+.text-right{text-align:right}
+.highlight{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:600}
+.print-btn{display:none}
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .form-row.cols4{grid-template-columns:1fr 1fr}
+  .nav-tabs{overflow-x:auto}
+  .tab{white-space:nowrap}
+}
+@media print{
+  header,.nav-tabs,.btn,.search-bar,.no-print{display:none!important}
+  body{background:#fff;color:#000}
+  table{font-size:11px}
+  .card{border:1px solid #ccc}
+}
+
+/* SAVE STATUS BAR */
+.save-bar{height:3px;position:fixed;top:60px;left:0;right:0;z-index:99;background:transparent;transition:background .4s}
+.save-bar.saving{background:var(--gold);animation:savepulse .6s infinite}
+.save-bar.saved{background:var(--accent3)}
+.save-bar.error{background:var(--danger)}
+@keyframes savepulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sync-indicator{display:flex;align-items:center;gap:6px;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer;padding:4px 10px;border-radius:4px;border:1px solid var(--border2);background:var(--surface2);transition:all .2s}
+.sync-indicator:hover{border-color:var(--accent)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
+.sync-dot.local{background:var(--gold)}
+.sync-dot.drive{background:var(--accent3);box-shadow:0 0 6px var(--accent3)}
+.sync-dot.syncing{background:var(--accent);animation:savepulse .8s infinite}
+.sync-dot.error{background:var(--danger)}
+
+/* SYNC PANEL ON DASHBOARD */
+.sync-panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:16px}
+.sync-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.sync-row:last-child{border-bottom:none}
+.sync-method-icon{font-size:22px;width:32px;text-align:center;flex-shrink:0}
+.sync-method-info{flex:1}
+.sync-method-title{font-weight:600;font-size:13px;margin-bottom:2px}
+.sync-method-desc{font-size:11px;color:var(--text2)}
+.sync-status-pill{padding:3px 10px;border-radius:12px;font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:600;white-space:nowrap}
+.pill-ok{background:rgba(0,255,157,0.12);color:var(--accent3);border:1px solid rgba(0,255,157,0.2)}
+.pill-warn{background:rgba(255,209,102,0.12);color:var(--gold);border:1px solid rgba(255,209,102,0.2)}
+.pill-off{background:rgba(74,85,104,0.3);color:var(--text3);border:1px solid var(--border)}
+
+.drive-panel{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:16px;margin-bottom:16px}
+.drive-status{display:flex;align-items:center;gap:10px;font-size:13px}
+.drive-dot{width:9px;height:9px;border-radius:50%;background:var(--text3)}
+.drive-dot.connected{background:var(--accent3);box-shadow:0 0 8px var(--accent3)}
+.drive-dot.connecting{background:var(--gold);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.drive-files{margin-top:12px;max-height:200px;overflow-y:auto}
+.drive-file-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:5px;cursor:pointer;transition:background .15s;font-size:12px}
+.drive-file-item:hover{background:rgba(0,212,255,0.07)}
+.drive-file-icon{font-size:16px;margin-right:8px}
+.excel-badge{background:rgba(0,180,0,0.15);color:#4ecb71;border:1px solid rgba(0,180,0,0.2);padding:2px 7px;border-radius:3px;font-size:10px;font-family:'IBM Plex Mono',monospace}
+.modal-xl{max-width:900px}
+.tab-btns{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab-btn{padding:9px 18px;cursor:pointer;font-size:13px;color:var(--text2);border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.import-zone{border:2px dashed var(--border2);border-radius:8px;padding:32px;text-align:center;cursor:pointer;transition:all .2s}
+.import-zone:hover,.import-zone.drag{border-color:var(--accent);background:rgba(0,212,255,0.05)}
+.import-zone .icon{font-size:36px;margin-bottom:10px}
+.import-zone p{font-size:13px;color:var(--text2)}
+.gapi-config{background:rgba(255,107,0,0.08);border:1px solid rgba(255,107,0,0.2);border-radius:6px;padding:12px 16px;font-size:12px;color:var(--text2);margin-bottom:12px}
+.gapi-config input{background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:6px 10px;border-radius:4px;font-size:12px;width:100%;margin-top:6px;font-family:'IBM Plex Mono',monospace}
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+
+<!-- SAVE STATUS BAR -->
+<div class="save-bar" id="save-bar"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div>
+      <div class="logo-text">CySlean APU</div>
+      <div class="logo-sub">Análisis de Precios Unitarios · Obra Eléctrica</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="badge" id="obra-badge">Sin proyecto</span>
+    <!-- Sync indicator -->
+    <div class="sync-indicator" onclick="openModalExcel();excelTab('drive',document.querySelectorAll('.tab-btn')[2])" title="Estado de sincronización — clic para gestionar">
+      <div class="sync-dot" id="sync-dot-local" title="localStorage"></div>
+      <span id="sync-label" style="color:var(--text2)">Solo local</span>
+      <div class="sync-dot" id="sync-dot-drive" title="Google Drive"></div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="quickSave()" id="quick-save-btn" title="Guardar ahora en todos los destinos configurados">💾 Guardar</button>
+    <button class="btn btn-secondary btn-sm" onclick="openModalExcel()">📊 Excel / Drive</button>
+    <button class="btn btn-primary btn-sm" onclick="openTab('dashboard')">⚙ Proyecto</button>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="nav-tabs">
+  <div class="tab active" onclick="openTab('dashboard')" id="tab-dashboard"><span class="icon">📊</span> Dashboard</div>
+  <div class="tab" onclick="openTab('catalogo')" id="tab-catalogo"><span class="icon">📦</span> Catálogo Base</div>
+  <div class="tab" onclick="openTab('apu')" id="tab-apu"><span class="icon">⚡</span> Análisis APU</div>
+  <div class="tab" onclick="openTab('concentrado')" id="tab-concentrado"><span class="icon">📋</span> Concentrado</div>
+  <div class="tab" onclick="openTab('bd')" id="tab-bd"><span class="icon">🗄</span> Base de Datos</div>
+</div>
+
+<div class="main">
+
+<!-- ======== DASHBOARD ======== -->
+<div class="page active" id="page-dashboard">
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-label">Total conceptos</div>
+      <div class="stat-value blue" id="stat-conceptos">0</div>
+      <div class="stat-sub">APUs registrados</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">Importe total</div>
+      <div class="stat-value orange" id="stat-importe">$0</div>
+      <div class="stat-sub">Suma de presupuesto</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Materiales</div>
+      <div class="stat-value green" id="stat-materiales">0%</div>
+      <div class="stat-sub">Del costo directo</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">Insumos en BD</div>
+      <div class="stat-value gold" id="stat-insumos">0</div>
+      <div class="stat-sub">Base actualizable</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚡ Resumen APUs recientes</div>
+        <button class="btn btn-primary btn-sm" onclick="openTab('apu')">Nuevo APU</button>
+      </div>
+      <div class="card-body table-wrap" style="padding:0">
+        <table>
+          <thead><tr><th>#</th><th>Descripción</th><th>Unidad</th><th class="number">P.U.</th><th>Estado</th></tr></thead>
+          <tbody id="dashboard-apu-list">
+            <tr><td colspan="5" class="empty-state"><div class="icon">⚡</div><p>Sin APUs creados</p></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">📊 Composición de costos</div></div>
+      <div class="card-body">
+        <div class="progress-container">
+          <div class="progress-label"><span>🔵 Materiales</span><span id="pct-mat">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="bar-mat" style="width:0%;background:var(--accent)"></div></div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-label"><span>🟢 Mano de Obra</span><span id="pct-mo">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="bar-mo" style="width:0%;background:var(--accent3)"></div></div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-label"><span>🟠 Equipo/Herr.</span><span id="pct-eq">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="bar-eq" style="width:0%;background:var(--accent2)"></div></div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-label"><span>🟡 Subcontrato</span><span id="pct-sub">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="bar-sub" style="width:0%;background:var(--gold)"></div></div>
+        </div>
+        <div class="divider"></div>
+        <div style="font-size:12px;color:var(--text2)">Proyecto actual: <span class="highlight" id="proj-name-dash">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt16 card">
+    <div class="card-header">
+      <div class="card-title">💾 Estado de guardado y sincronización</div>
+      <button class="btn btn-primary btn-sm" onclick="quickSave()">💾 Guardar ahora</button>
+    </div>
+    <div class="sync-panel" style="border:none;margin:0">
+      <!-- localStorage -->
+      <div class="sync-row">
+        <div class="sync-method-icon">🗄</div>
+        <div class="sync-method-info">
+          <div class="sync-method-title">Navegador (localStorage)</div>
+          <div class="sync-method-desc" id="local-last-save">Guardado automático en cada cambio — permanece mientras no limpies el caché</div>
+        </div>
+        <span class="sync-status-pill pill-ok" id="local-status-pill">✓ Activo</span>
+      </div>
+      <!-- Google Drive -->
+      <div class="sync-row">
+        <div class="sync-method-icon">☁</div>
+        <div class="sync-method-info">
+          <div class="sync-method-title">Google Drive (Apps Script)</div>
+          <div class="sync-method-desc" id="drive-last-save-dash">Sincroniza entre dispositivos — requiere configurar URL del script</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="sync-status-pill" id="drive-status-pill-dash" style="background:rgba(74,85,104,0.3);color:var(--text3);border:1px solid var(--border)">Sin configurar</span>
+          <button class="btn btn-secondary btn-sm" onclick="openModalExcel();setTimeout(()=>excelTab('drive',document.querySelectorAll('.tab-btn')[2]),100)">Configurar</button>
+        </div>
+      </div>
+      <!-- Excel -->
+      <div class="sync-row">
+        <div class="sync-method-icon">📊</div>
+        <div class="sync-method-info">
+          <div class="sync-method-title">Exportar a Excel (.xlsx)</div>
+          <div class="sync-method-desc">Respaldo local descargable — ideal para compartir con clientes o abrir en otra PC</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="exportExcelBD()">BD</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportExcelConcentrado()">Presupuesto</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportExcelCompleto()">Completo</button>
+        </div>
+      </div>
+      <!-- Auto-sync toggle -->
+      <div class="sync-row" style="background:rgba(0,212,255,0.03)">
+        <div class="sync-method-icon">⚙</div>
+        <div class="sync-method-info">
+          <div class="sync-method-title">Auto-guardar en Drive</div>
+          <div class="sync-method-desc">Sincroniza automáticamente con Drive cada vez que guardas un APU (requiere Drive configurado)</div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--text2)">
+          <input type="checkbox" id="auto-drive-toggle" onchange="toggleAutoDrive(this.checked)" style="width:16px;height:16px;accent-color:var(--accent)">
+          Auto-Drive
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt16 card">
+    <div class="card-header"><div class="card-title">🏗 Configuración del Proyecto</div></div>
+    <div class="card-body">
+      <div class="form-row cols4">
+        <div class="form-group"><label>Nombre de la obra</label><input type="text" id="proj-nombre" placeholder="Instalación eléctrica industrial" oninput="saveProyecto()"></div>
+        <div class="form-group"><label>Empresa</label><input type="text" id="proj-empresa" placeholder="Constructora ABC" oninput="saveProyecto()"></div>
+        <div class="form-group"><label>Ubicación</label><input type="text" id="proj-ubicacion" placeholder="Ciudad, Estado" oninput="saveProyecto()"></div>
+        <div class="form-group"><label>Fecha</label><input type="date" id="proj-fecha" oninput="saveProyecto()"></div>
+      </div>
+      <div class="form-row cols4">
+        <div class="form-group"><label>Indirectos (%)</label><input type="number" id="proj-indirectos" value="15" min="0" max="50" oninput="saveProyecto()"></div>
+        <div class="form-group"><label>Financiamiento (%)</label><input type="number" id="proj-financiamiento" value="3" min="0" max="20" oninput="saveProyecto()"></div>
+        <div class="form-group"><label>Utilidad (%)</label><input type="number" id="proj-utilidad" value="8" min="0" max="30" oninput="saveProyecto()"></div>
+        <div class="form-group"><label>IVA (%)</label><input type="number" id="proj-iva" value="16" min="0" max="20" oninput="saveProyecto()"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== CATÁLOGO BASE ======== -->
+<div class="page" id="page-catalogo">
+  <div class="flex-between" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:16px">📦 Catálogo de Conceptos</h2>
+      <p style="font-size:12px;color:var(--text2);margin-top:4px">Partidas y conceptos de trabajo eléctrico</p>
+    </div>
+    <div class="flex">
+      <button class="btn btn-secondary" onclick="loadCatalogoDefault()">⚡ Cargar catálogo estándar</button>
+      <button class="btn btn-primary" onclick="openModalConcepto()">+ Concepto</button>
+    </div>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" type="text" id="cat-search" placeholder="🔍  Buscar concepto..." oninput="filterCatalogo()">
+    <span class="filter-chip active" onclick="filterCat('all',this)">Todos</span>
+    <span class="filter-chip" onclick="filterCat('alumbrado',this)">Alumbrado</span>
+    <span class="filter-chip" onclick="filterCat('fuerza',this)">Fuerza</span>
+    <span class="filter-chip" onclick="filterCat('tierra',this)">Tierra</span>
+    <span class="filter-chip" onclick="filterCat('tableros',this)">Tableros</span>
+    <span class="filter-chip" onclick="filterCat('canalizacion',this)">Canalización</span>
+  </div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Clave</th><th>Descripción</th><th>Partida</th><th>Unidad</th><th class="number">P.U. CD</th><th class="number">P.U. Total</th><th>Acciones</th></tr></thead>
+        <tbody id="catalogo-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======== NUEVO APU ======== -->
+<div class="page" id="page-apu">
+  <div class="flex-between" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:16px">⚡ Análisis de Precio Unitario</h2>
+      <p style="font-size:12px;color:var(--text2);margin-top:4px">Composición detallada de costos directos</p>
+    </div>
+    <div class="flex">
+      <button class="btn btn-secondary" onclick="nuevoAPU()">🔄 Limpiar</button>
+      <button class="btn btn-orange" onclick="calcularAPU()">⚙ Calcular</button>
+      <button class="btn btn-success" onclick="guardarAPU()">💾 Guardar APU</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:16px">
+    <!-- Panel principal -->
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><div class="card-title">📝 Datos del concepto</div></div>
+        <div class="card-body">
+          <div class="form-row cols3">
+            <div class="form-group"><label>Clave</label><input type="text" id="apu-clave" placeholder="EL-001"></div>
+            <div class="form-group" style="grid-column:span 2"><label>Descripción del concepto</label><input type="text" id="apu-desc" placeholder="Suministro e instalación de luminaria LED 2x32W..."></div>
+          </div>
+          <div class="form-row cols4">
+            <div class="form-group"><label>Unidad</label><select id="apu-unidad"><option>pza</option><option>m</option><option>ml</option><option>m²</option><option>m³</option><option>kg</option><option>jgo</option><option>pto</option><option>circ</option><option>tramo</option><option>lote</option></select></div>
+            <div class="form-group"><label>Partida</label><select id="apu-partida"><option value="alumbrado">Alumbrado</option><option value="fuerza">Fuerza</option><option value="tierra">Tierra</option><option value="tableros">Tableros</option><option value="canalizacion">Canalización</option><option value="especial">Especial</option></select></div>
+            <div class="form-group"><label>Rendimiento</label><input type="number" id="apu-rendimiento" value="1" step="0.01" min="0.001"></div>
+            <div class="form-group"><label>Factor SMLV</label><input type="number" id="apu-factor" value="1.35" step="0.01" title="Factor prestaciones mano de obra"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leyenda rendimientos -->
+      <div style="display:flex;gap:16px;margin-bottom:12px;padding:8px 14px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);font-size:11px;flex-wrap:wrap">
+        <span style="color:var(--text2);font-weight:600;letter-spacing:.5px;font-family:'IBM Plex Mono',monospace">FÓRMULAS:</span>
+        <span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace">MAT</span> <span style="color:var(--text2)">= Cantidad × </span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace">Rendim.</span><span style="color:var(--text2)"> × Precio</span></span>
+        <span><span style="color:var(--accent3);font-family:'IBM Plex Mono',monospace">M.O.</span> <span style="color:var(--text2)">= (Salario × </span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace">Factor</span><span style="color:var(--text2)">) ÷ </span><span style="color:var(--accent3);font-family:'IBM Plex Mono',monospace">Rendim.</span></span>
+        <span><span style="color:var(--accent2);font-family:'IBM Plex Mono',monospace">EQ</span> <span style="color:var(--text2)">= Cantidad × </span><span style="color:var(--accent2);font-family:'IBM Plex Mono',monospace">Rendim.</span><span style="color:var(--text2)"> × Costo</span></span>
+        <span style="color:var(--text3);margin-left:auto">El <span style="color:var(--gold)">Rendim.</span> viene de la BD y es editable por insumo</span>
+      </div>
+
+      <!-- MATERIALES -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header">
+          <div class="card-title"><span style="color:var(--accent)">■</span> MATERIALES</div>
+          <button class="btn btn-secondary btn-sm" onclick="addInsumo('mat')">+ Insumo</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Clave</th><th>Descripción</th><th>Unidad</th><th class="number" title="Cantidad base por unidad de concepto">Cantidad</th><th class="number" title="Rendimiento por unidad del concepto (ej: 3.5m de cable por salida)">Rendim.</th><th class="number">P. Unit.</th><th class="number">Importe</th><th></th></tr></thead>
+            <tbody id="tbody-mat"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MANO DE OBRA -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header">
+          <div class="card-title"><span style="color:var(--accent3)">■</span> MANO DE OBRA</div>
+          <button class="btn btn-secondary btn-sm" onclick="addInsumo('mo')">+ Cuadrilla</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Clave</th><th>Categoría</th><th>Unidad</th><th class="number" title="Unidades producidas por jornada (ej: 100 ml/jor). Importe = (Salario × Factor) ÷ Rendim.">Rendim.</th><th class="number" title="Factor de prestaciones aplicado al salario">Factor</th><th class="number">Salario</th><th class="number">Importe</th><th></th></tr></thead>
+            <tbody id="tbody-mo"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EQUIPO -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header">
+          <div class="card-title"><span style="color:var(--accent2)">■</span> EQUIPO Y HERRAMIENTA</div>
+          <button class="btn btn-secondary btn-sm" onclick="addInsumo('eq')">+ Equipo</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Clave</th><th>Descripción</th><th>Unidad</th><th class="number" title="Cantidad de equipo por unidad de concepto">Cantidad</th><th class="number" title="Rendimiento/tiempo por unidad">Rendim.</th><th class="number">Costo/u</th><th class="number">Importe</th><th></th></tr></thead>
+            <tbody id="tbody-eq"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel resumen -->
+    <div>
+      <div class="card" style="position:sticky;top:80px">
+        <div class="card-header"><div class="card-title">💰 Resumen de costos</div></div>
+        <div class="card-body">
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent)">● Materiales</span><span class="highlight" id="res-mat">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent3)">● Mano de Obra</span><span class="highlight" id="res-mo">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent2)">● Equipo/Herr.</span><span class="highlight" id="res-eq">$0.00</span></div>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span style="color:var(--text2)">Costo Directo</span><span class="highlight" id="res-cd">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Indirectos <small id="pct-ind-lbl">15%</small></span><span class="highlight" id="res-ind">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Financiamiento <small id="pct-fin-lbl">3%</small></span><span class="highlight" id="res-fin">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Utilidad <small id="pct-ut-lbl">8%</small></span><span class="highlight" id="res-ut">$0.00</span></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:6px;font-weight:600"><span>Precio Unitario</span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:18px" id="res-pu">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">IVA <small id="pct-iva-lbl">16%</small></span><span class="highlight" id="res-iva">$0.00</span></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700"><span style="color:var(--gold)">PRECIO TOTAL c/IVA</span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace" id="res-total">$0.00</span></div>
+
+          <div class="divider"></div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:8px;font-family:'IBM Plex Mono',monospace">COMPOSICIÓN COSTO DIRECTO</div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:11px">Mat.</span><span id="r-pct-mat" style="font-size:11px">0%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="r-bar-mat" style="width:0%;background:var(--accent)"></div></div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:11px">M.O.</span><span id="r-pct-mo" style="font-size:11px">0%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="r-bar-mo" style="width:0%;background:var(--accent3)"></div></div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:11px">Equipo</span><span id="r-pct-eq" style="font-size:11px">0%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="r-bar-eq" style="width:0%;background:var(--accent2)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== CONCENTRADO ======== -->
+<div class="page" id="page-concentrado">
+  <div class="flex-between" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:16px">📋 Concentrado de Presupuesto</h2>
+      <p style="font-size:12px;color:var(--text2);margin-top:4px">Resumen de todos los APUs con cantidades y presupuesto</p>
+    </div>
+    <div class="flex">
+      <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+      <button class="btn btn-secondary" onclick="exportCSV()">CSV</button>
+      <button class="btn btn-primary" onclick="exportExcelConcentrado()">📊 Exportar Excel</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📋 Conceptos de obra — <span id="conc-proj-name">Sin proyecto</span></div>
+      <div style="font-size:12px;color:var(--text2)">Fecha: <span id="conc-fecha">—</span></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Clave</th><th>Descripción</th><th>Partida</th><th>Unidad</th><th class="number">P.U. CD</th><th class="number">P.U. Total</th><th class="number">Cantidad</th><th class="number">Importe</th><th class="no-print">Acciones</th></tr></thead>
+        <tbody id="concentrado-tbody"></tbody>
+        <tfoot>
+          <tr class="tr-total">
+            <td colspan="7" style="text-align:right;padding-right:16px">SUBTOTAL COSTO DIRECTO:</td>
+            <td class="number" id="conc-subtotal">$0.00</td>
+            <td class="no-print"></td>
+          </tr>
+          <tr style="background:rgba(0,212,255,0.04)">
+            <td colspan="7" style="text-align:right;padding-right:16px;font-size:12px;color:var(--text2)">Indirectos + Financiamiento + Utilidad:</td>
+            <td class="number highlight" id="conc-ifu">$0.00</td>
+            <td class="no-print"></td>
+          </tr>
+          <tr style="background:rgba(0,212,255,0.04)">
+            <td colspan="7" style="text-align:right;padding-right:16px;font-size:12px;color:var(--text2)">IVA (16%):</td>
+            <td class="number highlight" id="conc-iva">$0.00</td>
+            <td class="no-print"></td>
+          </tr>
+          <tr class="tr-total" style="background:rgba(255,209,102,0.1)!important">
+            <td colspan="7" style="text-align:right;padding-right:16px;color:var(--gold);font-size:15px">TOTAL DE OBRA c/IVA:</td>
+            <td class="number" style="color:var(--gold);font-size:15px" id="conc-total">$0.00</td>
+            <td class="no-print"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======== BASE DE DATOS ======== -->
+<div class="page" id="page-bd">
+  <div class="flex-between" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:16px">🗄 Base de Datos de Insumos</h2>
+      <p style="font-size:12px;color:var(--text2);margin-top:4px">Precios actualizables de materiales, mano de obra y equipo</p>
+    </div>
+    <div class="flex">
+      <button class="btn btn-secondary" onclick="loadBDDefault()">⚡ Cargar BD estándar</button>
+      <button class="btn btn-secondary" onclick="exportBDExcel()">📊 Exportar Excel</button>
+      <button class="btn btn-secondary" onclick="exportBD()">⬇ JSON</button>
+      <button class="btn btn-primary" onclick="openModalInsumo()">+ Insumo</button>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input class="search-input" type="text" id="bd-search" placeholder="🔍  Buscar en base de datos..." oninput="filterBD()">
+    <span class="filter-chip active" onclick="filterBDType('all',this)">Todos</span>
+    <span class="filter-chip" onclick="filterBDType('mat',this)">Materiales</span>
+    <span class="filter-chip" onclick="filterBDType('mo',this)">Mano de Obra</span>
+    <span class="filter-chip" onclick="filterBDType('eq',this)">Equipo</span>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Clave</th><th>Descripción</th><th>Tipo</th><th>Unidad</th><th class="number">Precio</th><th class="number" title="Rendimiento típico por unidad de concepto (sugerido al agregar al APU)">Rend. base</th><th>Proveedor</th><th>Actualizado</th><th>Acciones</th></tr></thead>
+        <tbody id="bd-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div><!-- end main -->
+
+<!-- ======== MODALS ======== -->
+
+<!-- Modal insumo BD -->
+<div class="modal-overlay" id="modal-insumo">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-insumo-title">+ Nuevo Insumo</div>
+      <button class="close-btn" onclick="closeModal('modal-insumo')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row cols2">
+        <div class="form-group"><label>Clave</label><input type="text" id="ins-clave" placeholder="MAT-001"></div>
+        <div class="form-group"><label>Tipo</label><select id="ins-tipo"><option value="mat">Material</option><option value="mo">Mano de Obra</option><option value="eq">Equipo/Herramienta</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Descripción</label><input type="text" id="ins-desc" placeholder="Cable THW calibre 12 AWG"></div>
+      </div>
+      <div class="form-row cols3">
+        <div class="form-group"><label>Unidad</label><input type="text" id="ins-unidad" placeholder="m"></div>
+        <div class="form-group"><label>Precio unitario</label><input type="number" id="ins-precio" placeholder="0.00" step="0.01" min="0"></div>
+        <div class="form-group"><label>Proveedor</label><input type="text" id="ins-proveedor" placeholder="Ferroeléctrica"></div>
+      </div>
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label title="Rendimiento típico por unidad de concepto. Ej: 3.5 m de cable por cada salida instalada">Rendimiento base <span style="color:var(--text3);font-size:10px">(por unidad de concepto)</span></label>
+          <input type="number" id="ins-rendimiento" placeholder="1.00" step="0.001" min="0" value="1">
+        </div>
+        <div class="form-group">
+          <label title="Notas sobre el rendimiento o aplicación del insumo">Notas / aplicación</label>
+          <input type="text" id="ins-notas" placeholder="Ej: 3.5 m por salida de contacto">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-insumo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveInsumo()">Guardar insumo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal concepto catálogo -->
+<div class="modal-overlay" id="modal-concepto">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">+ Nuevo Concepto al Catálogo</div>
+      <button class="close-btn" onclick="closeModal('modal-concepto')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row cols3">
+        <div class="form-group"><label>Clave</label><input type="text" id="con-clave" placeholder="EL-001"></div>
+        <div class="form-group" style="grid-column:span 2"><label>Descripción</label><input type="text" id="con-desc" placeholder="Luminaria LED..."></div>
+      </div>
+      <div class="form-row cols3">
+        <div class="form-group"><label>Partida</label><select id="con-partida"><option value="alumbrado">Alumbrado</option><option value="fuerza">Fuerza</option><option value="tierra">Tierra</option><option value="tableros">Tableros</option><option value="canalizacion">Canalización</option><option value="especial">Especial</option></select></div>
+        <div class="form-group"><label>Unidad</label><input type="text" id="con-unidad" placeholder="pza"></div>
+        <div class="form-group"><label>P.U. Costo Directo</label><input type="number" id="con-pu" placeholder="0.00" step="0.01" min="0"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-concepto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveConcepto()">Agregar al catálogo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal buscar insumo -->
+<div class="modal-overlay" id="modal-buscar-ins">
+  <div class="modal" style="max-width:800px">
+    <div class="modal-header">
+      <div class="modal-title">🔍 Seleccionar insumo de BD</div>
+      <button class="close-btn" onclick="closeModal('modal-buscar-ins')">×</button>
+    </div>
+    <div class="modal-body">
+      <input class="search-input" style="width:100%;margin-bottom:12px" type="text" id="ins-search-modal" placeholder="Buscar insumo..." oninput="filterInsModal()">
+      <div class="table-wrap" style="max-height:350px;overflow-y:auto">
+        <table><thead><tr><th>Clave</th><th>Descripción</th><th>Tipo</th><th>Unidad</th><th class="number">Precio</th><th class="number" title="Rendimiento base por unidad de concepto">Rend.</th><th></th></tr></thead>
+        <tbody id="ins-modal-list"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Excel / Google Drive -->
+<div class="modal-overlay" id="modal-excel">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <div class="modal-title">📊 Excel &amp; Google Drive</div>
+      <button class="close-btn" onclick="closeModal('modal-excel')">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Tabs -->
+      <div class="tab-btns">
+        <div class="tab-btn active" onclick="excelTab('export',this)">⬇ Exportar a Excel</div>
+        <div class="tab-btn" onclick="excelTab('import',this)">⬆ Importar desde Excel</div>
+        <div class="tab-btn" onclick="excelTab('drive',this)">☁ Google Drive</div>
+      </div>
+
+      <!-- EXPORT TAB -->
+      <div id="etab-export">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Genera archivos Excel (.xlsx) con formato profesional descargables directamente o guardables en Drive.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card" style="padding:16px;cursor:pointer;transition:border-color .2s" onclick="exportExcelBD()" onmouseenter="this.style.borderColor='var(--accent)'" onmouseleave="this.style.borderColor=''">
+            <div style="font-size:24px;margin-bottom:8px">🗄</div>
+            <div style="font-weight:600;font-size:14px;margin-bottom:4px">Base de Datos</div>
+            <div style="font-size:12px;color:var(--text2)">Exporta todos los insumos (materiales, M.O., equipo) en hojas separadas con precios actualizados</div>
+            <div class="excel-badge" style="margin-top:10px;display:inline-block">BD_Insumos.xlsx</div>
+          </div>
+          <div class="card" style="padding:16px;cursor:pointer;transition:border-color .2s" onclick="exportExcelConcentrado()" onmouseenter="this.style.borderColor='var(--accent3)'" onmouseleave="this.style.borderColor=''">
+            <div style="font-size:24px;margin-bottom:8px">📋</div>
+            <div style="font-weight:600;font-size:14px;margin-bottom:4px">Concentrado de Presupuesto</div>
+            <div style="font-size:12px;color:var(--text2)">Genera presupuesto completo con todos los APUs, cantidades, precios unitarios y totales</div>
+            <div class="excel-badge" style="margin-top:10px;display:inline-block">Presupuesto.xlsx</div>
+          </div>
+          <div class="card" style="padding:16px;cursor:pointer;transition:border-color .2s" onclick="exportExcelAPUs()" onmouseenter="this.style.borderColor='var(--accent2)'" onmouseleave="this.style.borderColor=''">
+            <div style="font-size:24px;margin-bottom:8px">⚡</div>
+            <div style="font-weight:600;font-size:14px;margin-bottom:4px">Análisis APUs</div>
+            <div style="font-size:12px;color:var(--text2)">Cada APU en una hoja individual con composición detallada de costos directos</div>
+            <div class="excel-badge" style="margin-top:10px;display:inline-block">APUs_Detalle.xlsx</div>
+          </div>
+          <div class="card" style="padding:16px;cursor:pointer;transition:border-color .2s" onclick="exportExcelCompleto()" onmouseenter="this.style.borderColor='var(--gold)'" onmouseleave="this.style.borderColor=''">
+            <div style="font-size:24px;margin-bottom:8px">📦</div>
+            <div style="font-weight:600;font-size:14px;margin-bottom:4px">Proyecto Completo</div>
+            <div style="font-size:12px;color:var(--text2)">Todo en un solo libro: BD, catálogo, concentrado y APUs en hojas separadas</div>
+            <div class="excel-badge" style="margin-top:10px;display:inline-block" id="completo-badge">Proyecto.xlsx</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMPORT TAB -->
+      <div id="etab-import" style="display:none">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Importa una base de datos de insumos desde un archivo Excel. La primera fila debe ser el encabezado.</p>
+        <div class="import-zone" id="import-zone" onclick="document.getElementById('import-xlsx-file').click()" ondragover="dragOver(event)" ondrop="dropFile(event)" ondragleave="dragLeave(event)">
+          <div class="icon">📂</div>
+          <p><strong style="color:var(--text)">Haz clic aquí o arrastra un archivo .xlsx</strong></p>
+          <p style="margin-top:6px">Formato esperado: Clave | Descripción | Tipo | Unidad | Precio | Proveedor</p>
+          <p style="margin-top:6px;font-size:11px;color:var(--text3)">(Tipo debe ser: mat / mo / eq)</p>
+        </div>
+        <div id="import-preview" style="display:none;margin-top:14px">
+          <div style="font-size:13px;color:var(--accent3);margin-bottom:8px" id="import-preview-msg"></div>
+          <div class="table-wrap" style="max-height:200px;overflow-y:auto">
+            <table><thead><tr><th>Clave</th><th>Descripción</th><th>Tipo</th><th>Unidad</th><th class="number">Precio</th><th>Proveedor</th></tr></thead>
+            <tbody id="import-preview-tbody"></tbody></table>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:10px">
+          <button class="btn btn-secondary" onclick="clearImportPreview()">Cancelar</button>
+          <button class="btn btn-success" id="import-confirm-btn" style="display:none" onclick="confirmImportXlsx()">✓ Importar insumos</button>
+        </div>
+      </div>
+
+      <!-- DRIVE TAB — Apps Script -->
+      <div id="etab-drive" style="display:none">
+
+        <!-- URL config -->
+        <div class="gapi-config">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="font-size:16px">☁</span>
+            <strong style="color:var(--gold)">Conexión vía Google Apps Script</strong>
+            <span class="excel-badge" style="margin-left:auto">Sin Client ID requerido</span>
+          </div>
+          <p style="line-height:1.6">Pega la <strong style="color:var(--text)">URL de tu implementación</strong> de Apps Script para sincronizar la BD con <code style="color:var(--accent);background:rgba(0,212,255,0.08);padding:1px 6px;border-radius:3px"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="166664796f7375627965387a73787f787c7456717b777f7a3875797b">[email&#160;protected]</a></code></p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input type="text" id="gas-url" placeholder="https://script.google.com/macros/s/AKfy.../exec" oninput="saveGasUrl()" style="flex:1">
+            <button class="btn btn-secondary btn-sm" onclick="testGasConnection()">🔌 Probar</button>
+          </div>
+          <p style="margin-top:8px;font-size:11px;color:var(--text3)">¿Cómo instalar el script? Ver instrucciones abajo ↓</p>
+        </div>
+
+        <!-- Status bar -->
+        <div class="drive-panel">
+          <div class="drive-status">
+            <div class="drive-dot" id="drive-dot"></div>
+            <span id="drive-status-text" style="color:var(--text2)">Sin configurar — pega la URL arriba</span>
+            <div style="margin-left:auto;display:flex;gap:8px">
+              <button class="btn btn-secondary btn-sm" onclick="syncFromDrive()">⬇ Cargar desde Drive</button>
+              <button class="btn btn-primary btn-sm" id="sync-up-btn" onclick="syncToDrive()" style="display:none">☁ Guardar en Drive</button>
+            </div>
+          </div>
+          <div id="drive-last-sync" style="display:none;margin-top:8px;font-size:11px;color:var(--text3)"></div>
+        </div>
+
+        <!-- Acciones rápidas -->
+        <div id="drive-actions" style="display:none;margin-bottom:14px">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <button class="btn btn-secondary" onclick="driveAction('saveInsumos')" style="justify-content:center;padding:10px;font-size:12px">☁ Guardar BD</button>
+            <button class="btn btn-secondary" onclick="driveAction('saveAPUs')"    style="justify-content:center;padding:10px;font-size:12px">☁ Guardar APUs</button>
+            <button class="btn btn-secondary" onclick="driveAction('saveAll')"     style="justify-content:center;padding:10px;font-size:12px">☁ Guardar TODO</button>
+          </div>
+        </div>
+
+        <!-- Instrucciones -->
+        <div class="card" style="margin-top:4px">
+          <div class="card-header"><div class="card-title">📋 Instrucciones de instalación (1 vez)</div></div>
+          <div class="card-body" style="font-size:12px;line-height:1.8;color:var(--text2)">
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:start">
+              <span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:700">1.</span>
+              <span>Ve a <a href="https://script.google.com" target="_blank" style="color:var(--accent)">script.google.com</a> con <strong style="color:var(--text)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6010120f190503140f134e0c050e090e0a0220070d01090c4e030f0d">[email&#160;protected]</a></strong></span>
+              <span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:700">2.</span>
+              <span>Crea un <strong style="color:var(--text)">Nuevo proyecto</strong> → ponle nombre "CySlean APU"</span>
+              <span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:700">3.</span>
+              <span>Borra el código que aparece y <strong style="color:var(--text)">pega todo el contenido</strong> del archivo <code style="color:var(--accent3)">CySlean_APU_Script.gs</code> (que descargaste)</span>
+              <span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:700">4.</span>
+              <span>Haz clic en <strong style="color:var(--text)">Implementar → Nueva implementación</strong></span>
+              <span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:700">5.</span>
+              <span>Tipo: <strong style="color:var(--text)">Aplicación web</strong> · Ejecutar como: <strong style="color:var(--text)">Yo</strong> · Acceso: <strong style="color:var(--text)">Cualquier persona</strong></span>
+              <span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-weight:700">6.</span>
+              <span>Copia la <strong style="color:var(--text)">URL de implementación</strong> y pégala en el campo de arriba</span>
+              <span style="color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-weight:700">✓</span>
+              <span style="color:var(--accent3)">La app creará automáticamente una hoja <strong>"CySlean_APU_BaseDatos"</strong> en tu Drive con 4 pestañas: insumos, APUs, catálogo y proyecto</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="import-xlsx-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleXlsxImport(event)">
+
+
+
+<div class="notify" id="notify-container"></div>
+
+<input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let db = {
+  proyecto: { nombre:'', empresa:'', ubicacion:'', fecha:'', indirectos:15, financiamiento:3, utilidad:8, iva:16 },
+  insumos: [],     // BD de insumos
+  conceptos: [],   // catálogo de conceptos
+  apus: [],        // APUs guardados
+};
+let currentAPU = { clave:'', desc:'', unidad:'pza', partida:'alumbrado', rendimiento:1, factor:1.35, mat:[], mo:[], eq:[] };
+let currentBDFilter = 'all';
+let currentCatFilter = 'all';
+let editingInsumoIdx = -1;
+let pendingInsumoType = null;
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = () => {
+  loadFromStorage();
+  renderAll();
+  document.getElementById('proj-fecha').value = new Date().toISOString().slice(0,10);
+  loadGasUrl();
+  updateSyncUI();
+  // Auto-drive toggle state
+  const autoDrive = document.getElementById('auto-drive-toggle');
+  if(autoDrive) autoDrive.checked = localStorage.getItem('cyslean_auto_drive')==='1';
+};
+
+// ── Save bar ──────────────────────────────────────────────
+let saveBarTimer = null;
+function showSaveBar(state){
+  const bar = document.getElementById('save-bar');
+  if(!bar) return;
+  bar.className = 'save-bar ' + state;
+  clearTimeout(saveBarTimer);
+  if(state === 'saved') saveBarTimer = setTimeout(()=>{ bar.className='save-bar'; }, 1800);
+}
+
+// ── Sync UI update ────────────────────────────────────────
+function updateSyncUI(){
+  const localTs = localStorage.getItem('cyslean_local_ts');
+  const driveTs = localStorage.getItem('cyslean_last_sync');
+
+  // Header dots
+  const dotLocal = document.getElementById('sync-dot-local');
+  const dotDrive = document.getElementById('sync-dot-drive');
+  const label    = document.getElementById('sync-label');
+  if(dotLocal) dotLocal.className = 'sync-dot local';
+  if(dotDrive) dotDrive.className = 'sync-dot ' + (gasConnected ? 'drive' : '');
+  if(label){
+    if(gasConnected) label.textContent = 'Drive ✓';
+    else label.textContent = 'Solo local';
+    label.style.color = gasConnected ? 'var(--accent3)' : 'var(--text2)';
+  }
+
+  // Dashboard local row
+  const localDesc = document.getElementById('local-last-save');
+  if(localDesc && localTs) localDesc.textContent = 'Último guardado: ' + localTs + ' · Auto-activo';
+
+  // Dashboard drive row
+  const drivePill = document.getElementById('drive-status-pill-dash');
+  const driveDesc = document.getElementById('drive-last-save-dash');
+  if(drivePill){
+    if(gasConnected){
+      drivePill.className = 'sync-status-pill pill-ok';
+      drivePill.textContent = '✓ Conectado';
+    } else if(gasUrl){
+      drivePill.className = 'sync-status-pill pill-warn';
+      drivePill.textContent = '⚠ Sin probar';
+    } else {
+      drivePill.className = 'sync-status-pill pill-off';
+      drivePill.textContent = 'Sin configurar';
+    }
+  }
+  if(driveDesc && driveTs) driveDesc.textContent = 'Última sync: ' + driveTs;
+}
+
+// ── Quick save (all methods) ──────────────────────────────
+async function quickSave(){
+  const btn = document.getElementById('quick-save-btn');
+  if(btn){ btn.textContent = '⏳ Guardando...'; btn.disabled = true; }
+  showSaveBar('saving');
+  // 1. localStorage (always)
+  localStorage.setItem('cyslean_db', JSON.stringify(db));
+  localStorage.setItem('cyslean_local_ts', new Date().toLocaleString('es-MX'));
+  // 2. Drive (if configured)
+  if(gasUrl){
+    try{
+      const r = await gasPost({action:'saveAll', data: db});
+      if(r.ok){
+        const ts = new Date().toLocaleString('es-MX');
+        localStorage.setItem('cyslean_last_sync', ts);
+        gasConnected = true;
+        notify('Guardado: local + Drive ✓');
+      } else { notify('Local guardado. Drive: '+(r.error||'error'),'error'); }
+    } catch(e){ notify('Local guardado. Drive sin conexión.','error'); }
+  } else {
+    notify('Guardado localmente ✓ — configura Drive para sincronizar en la nube');
+  }
+  showSaveBar('saved');
+  updateSyncUI();
+  if(btn){ btn.textContent = '💾 Guardar'; btn.disabled = false; }
+}
+
+// ── Silent drive sync (auto-save) ────────────────────────
+async function syncToDriveQuiet(){
+  try{
+    const r = await gasPost({action:'saveAll', data: db});
+    if(r.ok){
+      const ts = new Date().toLocaleString('es-MX');
+      localStorage.setItem('cyslean_last_sync', ts);
+      gasConnected = true;
+      updateSyncUI();
+    }
+  } catch(e){ /* silent */ }
+}
+
+// ── Auto-drive toggle ─────────────────────────────────────
+function toggleAutoDrive(enabled){
+  localStorage.setItem('cyslean_auto_drive', enabled ? '1' : '0');
+  if(enabled && !gasUrl) notify('Configura primero la URL de Drive en Excel/Drive','error');
+  else notify(enabled ? 'Auto-Drive activado ✓' : 'Auto-Drive desactivado');
+}
+
+function loadFromStorage(){
+  const saved = localStorage.getItem('cyslean_db');
+  if(saved){ try{ db = JSON.parse(saved); applyProyecto(); }catch(e){} }
+}
+function saveToStorage(){
+  localStorage.setItem('cyslean_db', JSON.stringify(db));
+  // Update local save indicator
+  const ts = new Date().toLocaleString('es-MX');
+  localStorage.setItem('cyslean_local_ts', ts);
+  showSaveBar('saved');
+  updateSyncUI();
+  // Auto-drive if enabled
+  if(localStorage.getItem('cyslean_auto_drive')==='1' && gasUrl) syncToDriveQuiet();
+}
+
+function applyProyecto(){
+  const p = db.proyecto;
+  setValue('proj-nombre', p.nombre);
+  setValue('proj-empresa', p.empresa);
+  setValue('proj-ubicacion', p.ubicacion);
+  setValue('proj-fecha', p.fecha);
+  setValue('proj-indirectos', p.indirectos);
+  setValue('proj-financiamiento', p.financiamiento);
+  setValue('proj-utilidad', p.utilidad);
+  setValue('proj-iva', p.iva);
+  document.getElementById('obra-badge').textContent = p.nombre || 'Sin proyecto';
+}
+function setValue(id, val){ const el=document.getElementById(id); if(el && val!==undefined) el.value=val; }
+
+function saveProyecto(){
+  db.proyecto = {
+    nombre: val('proj-nombre'), empresa: val('proj-empresa'),
+    ubicacion: val('proj-ubicacion'), fecha: val('proj-fecha'),
+    indirectos: +val('proj-indirectos')||15,
+    financiamiento: +val('proj-financiamiento')||3,
+    utilidad: +val('proj-utilidad')||8,
+    iva: +val('proj-iva')||16
+  };
+  document.getElementById('obra-badge').textContent = db.proyecto.nombre || 'Sin proyecto';
+  saveToStorage();
+  updateDashboard();
+}
+function val(id){ const el=document.getElementById(id); return el ? el.value : ''; }
+
+function renderAll(){ renderBD(); renderCatalogo(); renderConcentrado(); updateDashboard(); }
+
+// ============================================================
+// TABS
+// ============================================================
+function openTab(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const page = document.getElementById('page-'+name);
+  const tab = document.getElementById('tab-'+name);
+  if(page) page.classList.add('active');
+  if(tab) tab.classList.add('active');
+  if(name==='concentrado') renderConcentrado();
+  if(name==='bd') renderBD();
+  if(name==='catalogo') renderCatalogo();
+  if(name==='dashboard') updateDashboard();
+}
+
+// ============================================================
+// BASE DE DATOS
+// ============================================================
+function loadBDDefault(){
+  const default_bd = [
+    // MATERIALES
+    {id:genId(),clave:'MAT-001',desc:'Cable THW calibre 12 AWG',tipo:'mat',unidad:'m',precio:18.50,proveedor:'Ferroeléctrica',rendimiento_base:3.5,notas:'~3.5m por salida contacto',fecha:hoy()},
+    {id:genId(),clave:'MAT-002',desc:'Cable THW calibre 10 AWG',tipo:'mat',unidad:'m',precio:27.80,proveedor:'Ferroeléctrica',rendimiento_base:4.0,notas:'~4m por circuito fuerza',fecha:hoy()},
+    {id:genId(),clave:'MAT-003',desc:'Cable THW calibre 8 AWG',tipo:'mat',unidad:'m',precio:45.20,proveedor:'Ferroeléctrica',rendimiento_base:5.0,notas:'~5m por alimentador',fecha:hoy()},
+    {id:genId(),clave:'MAT-004',desc:'Cable THW calibre 6 AWG',tipo:'mat',unidad:'m',precio:68.50,proveedor:'Ferroeléctrica',rendimiento_base:6.0,notas:'~6m por alimentador',fecha:hoy()},
+    {id:genId(),clave:'MAT-005',desc:'Conduit PVC 3/4"',tipo:'mat',unidad:'tramo',precio:48.00,proveedor:'Amanco',rendimiento_base:1.1,notas:'1.1 tramo/m (inc. desperdicios)',fecha:hoy()},
+    {id:genId(),clave:'MAT-006',desc:'Conduit PVC 1"',tipo:'mat',unidad:'tramo',precio:65.00,proveedor:'Amanco',rendimiento_base:1.1,notas:'1.1 tramo/m',fecha:hoy()},
+    {id:genId(),clave:'MAT-007',desc:'Conduit EMT 3/4"',tipo:'mat',unidad:'tramo',precio:85.00,proveedor:'Condumex',rendimiento_base:1.05,notas:'1.05 tramo/m',fecha:hoy()},
+    {id:genId(),clave:'MAT-008',desc:'Conduit EMT 1"',tipo:'mat',unidad:'tramo',precio:120.00,proveedor:'Condumex',rendimiento_base:1.05,notas:'1.05 tramo/m',fecha:hoy()},
+    {id:genId(),clave:'MAT-009',desc:'Luminaria LED panel 2x2 32W',tipo:'mat',unidad:'pza',precio:380.00,proveedor:'Volteck',rendimiento_base:1,notas:'1 pza por salida',fecha:hoy()},
+    {id:genId(),clave:'MAT-010',desc:'Luminaria LED industrial 100W',tipo:'mat',unidad:'pza',precio:980.00,proveedor:'Volteck',rendimiento_base:1,notas:'1 pza por salida',fecha:hoy()},
+    {id:genId(),clave:'MAT-011',desc:'Apagador sencillo',tipo:'mat',unidad:'pza',precio:45.00,proveedor:'Vimar',rendimiento_base:1,notas:'1 pza por salida',fecha:hoy()},
+    {id:genId(),clave:'MAT-012',desc:'Contacto doble polo a tierra',tipo:'mat',unidad:'pza',precio:65.00,proveedor:'Vimar',rendimiento_base:1,notas:'1 pza por salida',fecha:hoy()},
+    {id:genId(),clave:'MAT-013',desc:'Caja octagonal metálica',tipo:'mat',unidad:'pza',precio:22.00,proveedor:'Ferroeléctrica',rendimiento_base:1,notas:'1 pza por punto de luz',fecha:hoy()},
+    {id:genId(),clave:'MAT-014',desc:'Caja de registro 4x4',tipo:'mat',unidad:'pza',precio:38.00,proveedor:'Ferroeléctrica',rendimiento_base:1,notas:'1 pza por salida contacto/apagador',fecha:hoy()},
+    {id:genId(),clave:'MAT-015',desc:'Charola tipo escalerilla 300mm',tipo:'mat',unidad:'m',precio:185.00,proveedor:'Canaleta',rendimiento_base:1.05,notas:'1.05m/m inc. traslapes',fecha:hoy()},
+    {id:genId(),clave:'MAT-016',desc:'Tablero de distribución 12 circ.',tipo:'mat',unidad:'pza',precio:1850.00,proveedor:'Schneider',rendimiento_base:1,notas:'1 tablero por instalación',fecha:hoy()},
+    {id:genId(),clave:'MAT-017',desc:'Interruptor termomagnético 1P 20A',tipo:'mat',unidad:'pza',precio:95.00,proveedor:'Schneider',rendimiento_base:1,notas:'1 pza por circuito',fecha:hoy()},
+    {id:genId(),clave:'MAT-018',desc:'Interruptor termomagnético 2P 30A',tipo:'mat',unidad:'pza',precio:185.00,proveedor:'Schneider',rendimiento_base:1,notas:'1 pza por circuito bifásico',fecha:hoy()},
+    {id:genId(),clave:'MAT-019',desc:'Varilla copperweld 5/8"x1.80m',tipo:'mat',unidad:'pza',precio:320.00,proveedor:'Erico',rendimiento_base:1,notas:'1 pza por electrodo',fecha:hoy()},
+    {id:genId(),clave:'MAT-020',desc:'Cable desnudo cobre 25mm²',tipo:'mat',unidad:'m',precio:95.00,proveedor:'Condumex',rendimiento_base:2.5,notas:'~2.5m por electrodo tierra',fecha:hoy()},
+    // MANO DE OBRA
+    {id:genId(),clave:'MO-001',desc:'Oficial electricista',tipo:'mo',unidad:'jor',precio:380.00,proveedor:'—',rendimiento_base:0.25,notas:'~0.25 jornada por salida sencilla',fecha:hoy()},
+    {id:genId(),clave:'MO-002',desc:'Ayudante electricista',tipo:'mo',unidad:'jor',precio:210.00,proveedor:'—',rendimiento_base:0.25,notas:'~0.25 jornada por salida sencilla',fecha:hoy()},
+    {id:genId(),clave:'MO-003',desc:'Maestro electricista',tipo:'mo',unidad:'jor',precio:520.00,proveedor:'—',rendimiento_base:0.125,notas:'~0.125 jornada supervisión',fecha:hoy()},
+    {id:genId(),clave:'MO-004',desc:'Técnico especialista',tipo:'mo',unidad:'jor',precio:650.00,proveedor:'—',rendimiento_base:0.5,notas:'~0.5 jornada por tablero',fecha:hoy()},
+    // EQUIPO
+    {id:genId(),clave:'EQ-001',desc:'Escalera telescópica 6m',tipo:'eq',unidad:'día',precio:120.00,proveedor:'—',rendimiento_base:0.125,notas:'~1hr por salida (0.125 día)',fecha:hoy()},
+    {id:genId(),clave:'EQ-002',desc:'Taladro percutor 3/4"',tipo:'eq',unidad:'día',precio:95.00,proveedor:'—',rendimiento_base:0.125,notas:'~1hr por punto',fecha:hoy()},
+    {id:genId(),clave:'EQ-003',desc:'Herramienta menor (5% MO)',tipo:'eq',unidad:'%',precio:0.05,proveedor:'—',rendimiento_base:1,notas:'Factor % sobre costo MO',fecha:hoy()},
+    {id:genId(),clave:'EQ-004',desc:'Andamio tubular',tipo:'eq',unidad:'día',precio:180.00,proveedor:'—',rendimiento_base:0.25,notas:'~2hr por punto en altura',fecha:hoy()},
+    {id:genId(),clave:'EQ-005',desc:'Grúa pluma 5 ton',tipo:'eq',unidad:'hr',precio:850.00,proveedor:'—',rendimiento_base:0.5,notas:'~0.5hr por pieza pesada',fecha:hoy()},
+  ];
+  if(confirm(`¿Cargar ${default_bd.length} insumos estándar? Se agregarán a la base actual.`)){
+    db.insumos = [...db.insumos, ...default_bd];
+    saveToStorage(); renderBD(); updateDashboard();
+    notify('Base de datos estándar cargada ✓');
+  }
+}
+
+function renderBD(){
+  const tbody = document.getElementById('bd-tbody');
+  let items = db.insumos;
+  const search = (document.getElementById('bd-search')||{value:''}).value.toLowerCase();
+  if(currentBDFilter !== 'all') items = items.filter(i=>i.tipo===currentBDFilter);
+  if(search) items = items.filter(i=>(i.clave+i.desc+i.proveedor).toLowerCase().includes(search));
+  if(!items.length){ tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="icon">🗄</div><p>Sin insumos. Carga la BD estándar o agrega uno nuevo.</p></div></td></tr>`; return; }
+  tbody.innerHTML = items.map((ins,i)=>{
+    const idx = db.insumos.indexOf(ins);
+    const tag = ins.tipo==='mat'?'tag-mat':ins.tipo==='mo'?'tag-mo':'tag-eq';
+    const label = ins.tipo==='mat'?'MAT':ins.tipo==='mo'?'M.O.':'EQ';
+    const rend = ins.rendimiento_base||1;
+    return `<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2)">${ins.clave}</td>
+      <td>${ins.desc}${ins.notas?`<br><span style="font-size:10px;color:var(--text3);font-style:italic">${ins.notas}</span>`:''}
+      </td>
+      <td><span class="tag ${tag}">${label}</span></td>
+      <td>${ins.unidad}</td>
+      <td class="number">$${num(ins.precio)}</td>
+      <td class="number" style="color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:12px" title="Rendimiento base por unidad de concepto">${rend}</td>
+      <td style="font-size:12px;color:var(--text2)">${ins.proveedor||'—'}</td>
+      <td style="font-size:11px;color:var(--text3)">${ins.fecha||'—'}</td>
+      <td><div class="flex gap-8">
+        <button class="btn btn-secondary btn-sm" onclick="editInsumo(${idx})">✏</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInsumo(${idx})">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterBD(){ renderBD(); }
+function filterBDType(type, el){
+  currentBDFilter = type;
+  document.querySelectorAll('#page-bd .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderBD();
+}
+
+function openModalInsumo(){ editingInsumoIdx=-1; document.getElementById('modal-insumo-title').textContent='+ Nuevo Insumo'; clearForm(['ins-clave','ins-desc','ins-unidad','ins-precio','ins-proveedor','ins-notas']); setValue('ins-rendimiento',1); document.getElementById('modal-insumo').classList.add('open'); }
+function editInsumo(idx){ 
+  editingInsumoIdx=idx; 
+  const ins = db.insumos[idx];
+  document.getElementById('modal-insumo-title').textContent='✏ Editar Insumo';
+  setValue('ins-clave',ins.clave); setValue('ins-desc',ins.desc); setValue('ins-tipo',ins.tipo);
+  setValue('ins-unidad',ins.unidad); setValue('ins-precio',ins.precio); setValue('ins-proveedor',ins.proveedor);
+  setValue('ins-rendimiento', ins.rendimiento_base||1); setValue('ins-notas', ins.notas||'');
+  document.getElementById('modal-insumo').classList.add('open');
+}
+function deleteInsumo(idx){ if(confirm('¿Eliminar este insumo?')){ db.insumos.splice(idx,1); saveToStorage(); renderBD(); updateDashboard(); notify('Insumo eliminado'); } }
+function saveInsumo(){
+  const obj = { id:editingInsumoIdx>=0?db.insumos[editingInsumoIdx].id:genId(), clave:val('ins-clave'), desc:val('ins-desc'), tipo:val('ins-tipo'), unidad:val('ins-unidad'), precio:+val('ins-precio')||0, proveedor:val('ins-proveedor'), rendimiento_base:+val('ins-rendimiento')||1, notas:val('ins-notas'), fecha:hoy() };
+  if(!obj.desc){ notify('La descripción es obligatoria','error'); return; }
+  if(editingInsumoIdx>=0) db.insumos[editingInsumoIdx]=obj; else db.insumos.push(obj);
+  saveToStorage(); renderBD(); updateDashboard(); closeModal('modal-insumo');
+  notify(editingInsumoIdx>=0?'Insumo actualizado ✓':'Insumo guardado ✓');
+}
+
+// ============================================================
+// CATÁLOGO
+// ============================================================
+function loadCatalogoDefault(){
+  const default_cat = [
+    {id:genId(),clave:'EL-ALU-01',desc:'Suministro e inst. luminaria LED panel 60x60 32W',partida:'alumbrado',unidad:'pza',pu_cd:850},
+    {id:genId(),clave:'EL-ALU-02',desc:'Suministro e inst. luminaria LED industrial 100W',partida:'alumbrado',unidad:'pza',pu_cd:1850},
+    {id:genId(),clave:'EL-ALU-03',desc:'Suministro e inst. apagador sencillo',partida:'alumbrado',unidad:'pza',pu_cd:280},
+    {id:genId(),clave:'EL-FUE-01',desc:'Suministro e inst. contacto duplex 15A a tierra',partida:'fuerza',unidad:'pza',pu_cd:320},
+    {id:genId(),clave:'EL-FUE-02',desc:'Circuito de fuerza 12 AWG en conduit PVC 3/4"',partida:'fuerza',unidad:'circ',pu_cd:1200},
+    {id:genId(),clave:'EL-FUE-03',desc:'Circuito de fuerza 10 AWG en conduit EMT 3/4"',partida:'fuerza',unidad:'circ',pu_cd:1850},
+    {id:genId(),clave:'EL-TAB-01',desc:'Suministro e inst. tablero distribución 12 ctos.',partida:'tableros',unidad:'pza',pu_cd:4500},
+    {id:genId(),clave:'EL-TAB-02',desc:'Interruptor termomagnético 1P 20A',partida:'tableros',unidad:'pza',pu_cd:250},
+    {id:genId(),clave:'EL-CAN-01',desc:'Conduit PVC 3/4" c/accesorios y cables',partida:'canalizacion',unidad:'m',pu_cd:180},
+    {id:genId(),clave:'EL-CAN-02',desc:'Charola tipo escalerilla 300mm',partida:'canalizacion',unidad:'m',pu_cd:380},
+    {id:genId(),clave:'EL-TIE-01',desc:'Sistema de tierra física copperweld 5/8"',partida:'tierra',unidad:'pza',pu_cd:2800},
+    {id:genId(),clave:'EL-TIE-02',desc:'Cable de tierrra desnudo Cu 25mm²',partida:'tierra',unidad:'m',pu_cd:185},
+  ];
+  if(confirm(`¿Cargar ${default_cat.length} conceptos estándar?`)){
+    db.conceptos=[...db.conceptos,...default_cat];
+    saveToStorage(); renderCatalogo(); notify('Catálogo estándar cargado ✓');
+  }
+}
+
+function renderCatalogo(){
+  const tbody = document.getElementById('catalogo-tbody');
+  let items = db.conceptos;
+  const search = (document.getElementById('cat-search')||{value:''}).value.toLowerCase();
+  if(currentCatFilter !== 'all') items = items.filter(c=>c.partida===currentCatFilter);
+  if(search) items = items.filter(c=>(c.clave+c.desc).toLowerCase().includes(search));
+  if(!items.length){ tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="icon">📦</div><p>Sin conceptos. Carga el catálogo estándar.</p></div></td></tr>`; return; }
+  const p = db.proyecto;
+  const factor = (1+(p.indirectos||15)/100)*(1+(p.financiamiento||3)/100)*(1+(p.utilidad||8)/100);
+  tbody.innerHTML = items.map(con=>{
+    const idx = db.conceptos.indexOf(con);
+    const pu_total = (con.pu_cd||0)*factor;
+    return `<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2)">${con.clave}</td>
+      <td>${con.desc}</td>
+      <td><span class="tag" style="background:rgba(255,209,102,0.1);color:var(--gold);font-size:10px">${con.partida||'—'}</span></td>
+      <td>${con.unidad}</td>
+      <td class="number">$${num(con.pu_cd||0)}</td>
+      <td class="number" style="color:var(--accent)">$${num(pu_total)}</td>
+      <td><div class="flex gap-8">
+        <button class="btn btn-secondary btn-sm" onclick="usarConcepto(${idx})">⚡ Usar</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteConcepto(${idx})">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterCatalogo(){ renderCatalogo(); }
+function filterCat(type, el){
+  currentCatFilter = type;
+  document.querySelectorAll('#page-catalogo .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderCatalogo();
+}
+function openModalConcepto(){ clearForm(['con-clave','con-desc','con-unidad','con-pu']); document.getElementById('modal-concepto').classList.add('open'); }
+function saveConcepto(){
+  const obj = {id:genId(),clave:val('con-clave'),desc:val('con-desc'),partida:val('con-partida'),unidad:val('con-unidad'),pu_cd:+val('con-pu')||0};
+  if(!obj.desc){ notify('Descripción obligatoria','error'); return; }
+  db.conceptos.push(obj); saveToStorage(); renderCatalogo(); closeModal('modal-concepto');
+  notify('Concepto agregado ✓');
+}
+function deleteConcepto(idx){ if(confirm('¿Eliminar concepto?')){ db.conceptos.splice(idx,1); saveToStorage(); renderCatalogo(); } }
+function usarConcepto(idx){
+  const con = db.conceptos[idx];
+  // Cargar al APU
+  setValue('apu-clave',con.clave);
+  setValue('apu-desc',con.desc);
+  setValue('apu-unidad',con.unidad);
+  setValue('apu-partida',con.partida);
+  openTab('apu');
+  notify('Concepto cargado en APU');
+}
+
+// ============================================================
+// APU
+// ============================================================
+function nuevoAPU(){
+  if(confirm('¿Limpiar el APU actual?')){
+    currentAPU={clave:'',desc:'',unidad:'pza',partida:'alumbrado',rendimiento:1,factor:1.35,mat:[],mo:[],eq:[]};
+    clearForm(['apu-clave','apu-desc']);
+    setValue('apu-rendimiento',1); setValue('apu-factor',1.35);
+    renderInsumos(); calcularAPU();
+    notify('APU limpiado');
+  }
+}
+
+function addInsumo(tipo){
+  pendingInsumoType = tipo;
+  // Mostrar modal de búsqueda en BD
+  const all = db.insumos.filter(i=>i.tipo===tipo);
+  renderInsModal(all);
+  document.getElementById('modal-buscar-ins').classList.add('open');
+  document.getElementById('ins-search-modal').value='';
+}
+
+function renderInsModal(items){
+  const tbody = document.getElementById('ins-modal-list');
+  if(!items.length){ tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="icon">📦</div><p>Sin insumos del tipo seleccionado en la BD</p></div></td></tr>`; return; }
+  tbody.innerHTML = items.map(ins=>{
+    const i = db.insumos.indexOf(ins);
+    const rend = ins.rendimiento_base||1;
+    return `<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${ins.clave}</td>
+      <td style="font-size:12px">${ins.desc}${ins.notas?`<br><span style="font-size:10px;color:var(--text3)">${ins.notas}</span>`:''}
+      </td>
+      <td><span class="tag ${ins.tipo==='mat'?'tag-mat':ins.tipo==='mo'?'tag-mo':'tag-eq'}" style="font-size:10px">${ins.tipo.toUpperCase()}</span></td>
+      <td>${ins.unidad}</td>
+      <td class="number">$${num(ins.precio)}</td>
+      <td class="number" style="color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:11px" title="Rendimiento base por unidad de concepto">${rend}</td>
+      <td><button class="btn btn-primary btn-sm" onclick="selectInsumo(${i})">+ Agregar</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterInsModal(){
+  const search = document.getElementById('ins-search-modal').value.toLowerCase();
+  const items = db.insumos.filter(i=>i.tipo===pendingInsumoType&&(i.clave+i.desc).toLowerCase().includes(search));
+  renderInsModal(items);
+}
+
+function selectInsumo(idx){
+  const ins = db.insumos[idx];
+  const row = {
+    id: genId(),
+    clave: ins.clave,
+    desc: ins.desc,
+    unidad: ins.unidad,
+    precio: ins.precio,
+    cantidad: 1,
+    rendimiento: ins.rendimiento_base||1,   // viene de la BD, editable en el APU
+    factor_mo: ins.tipo==='mo' ? (+val('apu-factor')||1.35) : 1  // factor prestaciones para M.O.
+  };
+  currentAPU[pendingInsumoType].push(row);
+  renderInsumos(); calcularAPU(); closeModal('modal-buscar-ins');
+  notify(`${ins.desc} agregado (rend. ${row.rendimiento})`);
+}
+
+function renderInsumos(){
+  // MAT — Clave | Desc | Unidad | Cantidad | Rendim. | Precio | Importe | X
+  const tbodMat = document.getElementById('tbody-mat');
+  const mat = currentAPU.mat;
+  if(!mat.length) tbodMat.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:12px;font-size:12px">Sin materiales — agrega desde la BD</td></tr>`;
+  else tbodMat.innerHTML = mat.map((row,i)=>{
+    const imp = row.cantidad * row.rendimiento * row.precio;
+    return `<tr title="Importe = Cantidad × Rendimiento × Precio unitario">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${row.clave}</td>
+      <td style="font-size:12px">${row.desc}</td>
+      <td style="font-size:12px">${row.unidad}</td>
+      <td><input class="input-num" type="number" value="${row.cantidad}" step="0.001" min="0" title="Cantidad base"
+          onchange="updateInsumoVal('mat',${i},'cantidad',this.value)" style="width:70px"></td>
+      <td><input class="input-num" type="number" value="${row.rendimiento}" step="0.001" min="0"
+          title="Rendimiento: cuántas unidades de este material por unidad del concepto (ej: 3.5 m de cable por salida)"
+          onchange="updateInsumoVal('mat',${i},'rendimiento',this.value)"
+          style="width:70px;color:var(--gold);background:rgba(255,209,102,0.05)"></td>
+      <td><input class="input-num" type="number" value="${row.precio}" step="0.01" min="0"
+          onchange="updateInsumoVal('mat',${i},'precio',this.value)" style="width:85px"></td>
+      <td class="number highlight" title="${row.cantidad} × ${row.rendimiento} × $${num(row.precio)}">$${num(imp)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeInsumo('mat',${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  // MO — Clave | Categoría | Unidad | Rendim. | Factor | Salario | Importe | X
+  const tbodMO = document.getElementById('tbody-mo');
+  const mo = currentAPU.mo;
+  if(!mo.length) tbodMO.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:12px;font-size:12px">Sin mano de obra — agrega desde la BD</td></tr>`;
+  else tbodMO.innerHTML = mo.map((row,i)=>{
+    const factor = row.factor_mo||1;
+    const imp = (row.precio * factor) / (row.rendimiento||1);
+    return `<tr title="Importe = (Salario × Factor) ÷ Rendimiento">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${row.clave}</td>
+      <td style="font-size:12px">${row.desc}</td>
+      <td style="font-size:12px">${row.unidad}</td>
+      <td><input class="input-num" type="number" value="${row.rendimiento}" step="0.001" min="0"
+          title="Jornadas u horas por unidad del concepto"
+          onchange="updateInsumoVal('mo',${i},'rendimiento',this.value)"
+          style="width:70px;color:var(--accent3);background:rgba(0,255,157,0.05)"></td>
+      <td><input class="input-num" type="number" value="${factor}" step="0.01" min="1"
+          title="Factor de prestaciones (IMSS, INFONAVIT, etc.). Default 1.35"
+          onchange="updateInsumoVal('mo',${i},'factor_mo',this.value)"
+          style="width:65px;color:var(--gold);background:rgba(255,209,102,0.05)"></td>
+      <td><input class="input-num" type="number" value="${row.precio}" step="0.01" min="0"
+          onchange="updateInsumoVal('mo',${i},'precio',this.value)" style="width:85px"></td>
+      <td class="number highlight" title="${row.rendimiento} × ${factor} × $${num(row.precio)}">$${num(imp)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeInsumo('mo',${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  // EQ — Clave | Desc | Unidad | Cantidad | Rendim. | Costo | Importe | X
+  const tbodEQ = document.getElementById('tbody-eq');
+  const eq = currentAPU.eq;
+  if(!eq.length) tbodEQ.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:12px;font-size:12px">Sin equipo — agrega desde la BD</td></tr>`;
+  else tbodEQ.innerHTML = eq.map((row,i)=>{
+    const imp = row.cantidad * row.rendimiento * row.precio;
+    return `<tr title="Importe = Cantidad × Rendimiento × Costo unitario">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${row.clave}</td>
+      <td style="font-size:12px">${row.desc}</td>
+      <td style="font-size:12px">${row.unidad}</td>
+      <td><input class="input-num" type="number" value="${row.cantidad}" step="0.001" min="0"
+          onchange="updateInsumoVal('eq',${i},'cantidad',this.value)" style="width:70px"></td>
+      <td><input class="input-num" type="number" value="${row.rendimiento}" step="0.001" min="0"
+          title="Rendimiento: tiempo o fracción de uso por unidad del concepto"
+          onchange="updateInsumoVal('eq',${i},'rendimiento',this.value)"
+          style="width:70px;color:var(--accent2);background:rgba(255,107,0,0.05)"></td>
+      <td><input class="input-num" type="number" value="${row.precio}" step="0.01" min="0"
+          onchange="updateInsumoVal('eq',${i},'precio',this.value)" style="width:85px"></td>
+      <td class="number highlight" title="${row.cantidad} × ${row.rendimiento} × $${num(row.precio)}">$${num(imp)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeInsumo('eq',${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateInsumoVal(tipo,i,field,v){
+  currentAPU[tipo][i][field] = +v || 0;
+  // Solo actualizar el importe visible de esa fila, sin re-renderizar toda la tabla
+  const row = currentAPU[tipo][i];
+  let imp = 0;
+  if(tipo==='mo'){
+    imp = (row.precio * (row.factor_mo||1)) / (row.rendimiento||1);
+  } else {
+    imp = row.cantidad * (row.rendimiento||1) * row.precio;
+  }
+  // Actualizar celda de importe en la fila correspondiente
+  const tbody = document.getElementById('tbody-'+tipo);
+  if(tbody && tbody.rows[i]){
+    const cells = tbody.rows[i].cells;
+    const lastDataCell = cells[cells.length-2]; // importe es penúltima celda
+    lastDataCell.textContent = '$'+num(imp);
+    lastDataCell.title = tipo==='mo'
+      ? `($${num(row.precio)} × ${row.factor_mo||1}) ÷ ${row.rendimiento||1}`
+      : `${row.cantidad} × ${row.rendimiento||1} × $${num(row.precio)}`;
+  }
+  calcularAPU();
+}
+function removeInsumo(tipo,i){ currentAPU[tipo].splice(i,1); renderInsumos(); calcularAPU(); }
+function calcularAPU(){
+  // MAT: cantidad × rendimiento × precio
+  const mat = currentAPU.mat.reduce((a,r)=>a + r.cantidad*(r.rendimiento||1)*r.precio, 0);
+  // MO:  (salario × factor) / rendimiento  ← fórmula Neodata
+  const mo  = currentAPU.mo.reduce((a,r)=>a + (r.precio*(r.factor_mo||1)) / (r.rendimiento||1), 0);
+  // EQ:  cantidad × rendimiento × precio
+  const eq  = currentAPU.eq.reduce((a,r)=>a + r.cantidad*(r.rendimiento||1)*r.precio, 0);
+  const cd = mat+mo+eq;
+  const p = db.proyecto;
+  const ind = cd*(p.indirectos||15)/100;
+  const fin = cd*(p.financiamiento||3)/100;
+  const ut  = cd*(p.utilidad||8)/100;
+  const pu  = cd+ind+fin+ut;
+  const iva = pu*(p.iva||16)/100;
+  const total = pu+iva;
+  setText('res-mat','$'+num(mat)); setText('res-mo','$'+num(mo)); setText('res-eq','$'+num(eq));
+  setText('res-cd','$'+num(cd)); setText('res-ind','$'+num(ind)); setText('res-fin','$'+num(fin));
+  setText('res-ut','$'+num(ut)); setText('res-pu','$'+num(pu)); setText('res-iva','$'+num(iva));
+  setText('res-total','$'+num(total));
+  setText('pct-ind-lbl',(p.indirectos||15)+'%');
+  setText('pct-fin-lbl',(p.financiamiento||3)+'%');
+  setText('pct-ut-lbl',(p.utilidad||8)+'%');
+  setText('pct-iva-lbl',(p.iva||16)+'%');
+  const pctM=cd?Math.round(mat/cd*100):0, pctO=cd?Math.round(mo/cd*100):0, pctE=cd?Math.round(eq/cd*100):0;
+  ['mat','mo','eq'].forEach((t,idx)=>{
+    const pct=[pctM,pctO,pctE][idx];
+    setText(`r-pct-${t}`,pct+'%');
+    setStyle(`r-bar-${t}`,'width',pct+'%');
+  });
+}
+
+function guardarAPU(){
+  const clave=val('apu-clave'), desc=val('apu-desc');
+  if(!desc){ notify('Escribe una descripción del concepto','error'); return; }
+  const p = db.proyecto;
+  const mat = currentAPU.mat.reduce((a,r)=>a+r.cantidad*(r.rendimiento||1)*r.precio,0);
+  const mo  = currentAPU.mo.reduce((a,r)=>a+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0);
+  const eq  = currentAPU.eq.reduce((a,r)=>a+r.cantidad*(r.rendimiento||1)*r.precio,0);
+  const cd=mat+mo+eq;
+  const factor=(1+(p.indirectos||15)/100)*(1+(p.financiamiento||3)/100)*(1+(p.utilidad||8)/100);
+  const pu=cd*factor, iva=pu*(p.iva||16)/100;
+  const existIdx = db.apus.findIndex(a=>a.clave===clave && clave);
+  const obj = {
+    id: existIdx>=0?db.apus[existIdx].id:genId(),
+    clave, desc, unidad:val('apu-unidad'), partida:val('apu-partida'),
+    rendimiento:+val('apu-rendimiento')||1, factor:+val('apu-factor')||1.35,
+    mat:[...currentAPU.mat], mo:[...currentAPU.mo], eq:[...currentAPU.eq],
+    pu_cd:cd, pu_total:pu, pu_iva:pu+iva,
+    cantidad:1, fecha:hoy()
+  };
+  if(existIdx>=0){ db.apus[existIdx]=obj; notify('APU actualizado ✓'); }
+  else { db.apus.push(obj); notify('APU guardado ✓'); }
+  saveToStorage(); updateDashboard(); renderConcentrado();
+  // Agregar al catálogo si no existe
+  if(!db.conceptos.find(c=>c.clave===clave)){
+    db.conceptos.push({id:genId(),clave,desc,partida:val('apu-partida'),unidad:val('apu-unidad'),pu_cd:cd});
+    saveToStorage();
+  }
+}
+
+// ============================================================
+// CONCENTRADO
+// ============================================================
+function renderConcentrado(){
+  const p = db.proyecto;
+  setText('conc-proj-name', p.nombre||'Sin proyecto');
+  setText('conc-fecha', p.fecha||'—');
+  const factor=(1+(p.indirectos||15)/100)*(1+(p.financiamiento||3)/100)*(1+(p.utilidad||8)/100);
+  const tbody = document.getElementById('concentrado-tbody');
+  if(!db.apus.length){ tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="icon">📋</div><p>Sin APUs registrados</p></div></td></tr>`; updateConcentradoTotals(0); return; }
+  let subtotalCD = 0;
+  tbody.innerHTML = db.apus.map((apu,i)=>{
+    const importe = (apu.pu_total||0)*(apu.cantidad||0);
+    subtotalCD += apu.pu_cd*(apu.cantidad||0);
+    return `<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${apu.clave||'—'}</td>
+      <td style="font-size:12px">${apu.desc}</td>
+      <td><span class="tag" style="background:rgba(255,209,102,0.1);color:var(--gold);font-size:10px">${apu.partida||'—'}</span></td>
+      <td>${apu.unidad}</td>
+      <td class="number">$${num(apu.pu_cd||0)}</td>
+      <td class="number" style="color:var(--accent)">$${num(apu.pu_total||0)}</td>
+      <td><input class="input-num" type="number" value="${apu.cantidad||1}" min="0" step="0.01" onchange="updateCantidad(${i},this.value)" style="width:80px;text-align:center"></td>
+      <td class="number" style="color:var(--gold)">$${num(importe)}</td>
+      <td class="no-print"><div class="flex gap-8">
+        <button class="btn btn-secondary btn-sm" onclick="editAPU(${i})">✏</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAPU(${i})">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  updateConcentradoTotals(subtotalCD);
+}
+
+function updateConcentradoTotals(cd){
+  const p = db.proyecto;
+  const ifu = cd*((p.indirectos||15)/100+(p.financiamiento||3)/100+(p.utilidad||8)/100);
+  const sub = cd+ifu;
+  const iva = sub*(p.iva||16)/100;
+  const total = sub+iva;
+  setText('conc-subtotal','$'+num(cd));
+  setText('conc-ifu','$'+num(ifu));
+  setText('conc-iva','$'+num(iva));
+  setText('conc-total','$'+num(total));
+}
+
+function updateCantidad(i,v){ db.apus[i].cantidad=+v||0; saveToStorage(); renderConcentrado(); updateDashboard(); }
+function editAPU(idx){ const apu=db.apus[idx]; setValue('apu-clave',apu.clave); setValue('apu-desc',apu.desc); setValue('apu-unidad',apu.unidad); setValue('apu-partida',apu.partida); setValue('apu-rendimiento',apu.rendimiento); setValue('apu-factor',apu.factor); currentAPU={...apu}; renderInsumos(); calcularAPU(); openTab('apu'); }
+function deleteAPU(idx){ if(confirm('¿Eliminar este APU del presupuesto?')){ db.apus.splice(idx,1); saveToStorage(); renderConcentrado(); updateDashboard(); } }
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function updateDashboard(){
+  const total = db.apus.length;
+  setText('stat-conceptos', total);
+  setText('stat-insumos', db.insumos.length);
+  const p = db.proyecto;
+  setText('proj-name-dash', p.nombre||'—');
+  let totalImporte=0, totalMat=0, totalMO=0, totalEQ=0, totalSub=0;
+  db.apus.forEach(a=>{
+    const q = a.cantidad||0;
+    const mat = a.mat?a.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0):0;
+    const mo  = a.mo ?a.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0):0;
+    const eq  = a.eq ?a.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0):0;
+    const factor=(1+(p.indirectos||15)/100)*(1+(p.financiamiento||3)/100)*(1+(p.utilidad||8)/100);
+    totalImporte += (a.pu_total||0)*q;
+    totalMat+=mat*q; totalMO+=mo*q; totalEQ+=eq*q;
+  });
+  const totCD = totalMat+totalMO+totalEQ;
+  setText('stat-importe','$'+numK(totalImporte));
+  const pMat=totCD?Math.round(totalMat/totCD*100):0;
+  const pMO=totCD?Math.round(totalMO/totCD*100):0;
+  const pEQ=totCD?Math.round(totalEQ/totCD*100):0;
+  setText('stat-materiales', pMat+'%');
+  ['mat','mo','eq','sub'].forEach((k,i)=>{
+    const pct=[pMat,pMO,pEQ,0][i];
+    setText('pct-'+k,pct+'%');
+    setStyle('bar-'+k,'width',pct+'%');
+  });
+  // Recent APUs list
+  const tbody = document.getElementById('dashboard-apu-list');
+  if(!db.apus.length){ tbody.innerHTML=`<tr><td colspan="5" class="empty-state"><div class="icon">⚡</div><p>Sin APUs creados aún</p></td></tr>`; return; }
+  tbody.innerHTML = db.apus.slice(-8).reverse().map(apu=>`<tr>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${apu.clave||'—'}</td>
+    <td style="font-size:12px">${apu.desc.length>45?apu.desc.slice(0,45)+'…':apu.desc}</td>
+    <td>${apu.unidad}</td>
+    <td class="number" style="color:var(--accent)">$${num(apu.pu_total||0)}</td>
+    <td><span class="tag" style="background:rgba(0,255,157,0.1);color:var(--accent3);font-size:10px">✓ OK</span></td>
+  </tr>`).join('');
+}
+
+// ============================================================
+// EXCEL / DRIVE MODAL
+// ============================================================
+let pendingXlsxData = [];
+
+function openModalExcel(){
+  const name = db.proyecto.nombre || 'Proyecto';
+  document.getElementById('completo-badge').textContent = name.replace(/\s/g,'_')+'.xlsx';
+  loadGClientId();
+  document.getElementById('modal-excel').classList.add('open');
+}
+
+function excelTab(name, el){
+  ['export','import','drive'].forEach(t=>{
+    document.getElementById('etab-'+t).style.display = t===name?'':'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ============================================================
+// EXPORT TO EXCEL (SheetJS)
+// ============================================================
+function exportExcelBD(){
+  if(!db.insumos.length){ notify('La BD está vacía','error'); return; }
+  const wb = XLSX.utils.book_new();
+  // Hoja 1: Todos
+  addSheetInsumos(wb, db.insumos, 'Todos los Insumos');
+  // Hoja por tipo
+  addSheetInsumos(wb, db.insumos.filter(i=>i.tipo==='mat'), 'Materiales');
+  addSheetInsumos(wb, db.insumos.filter(i=>i.tipo==='mo'), 'Mano de Obra');
+  addSheetInsumos(wb, db.insumos.filter(i=>i.tipo==='eq'), 'Equipo y Herramienta');
+  // Metadata
+  const meta = XLSX.utils.aoa_to_sheet([
+    ['CySlean APU — Base de Datos de Insumos'],[''],
+    ['Proyecto:', db.proyecto.nombre||'—'],['Empresa:', db.proyecto.empresa||'—'],
+    ['Fecha exportación:', hoy()],['Total insumos:', db.insumos.length]
+  ]);
+  XLSX.utils.book_append_sheet(wb, meta, 'Información');
+  XLSX.writeFile(wb, `BD_Insumos_${hoy()}.xlsx`);
+  notify('BD exportada a Excel ✓');
+}
+
+function addSheetInsumos(wb, items, nombre){
+  if(!items.length) return;
+  const header = ['Clave','Descripción','Tipo','Unidad','Precio Unitario','Rendimiento Base','Proveedor','Fecha Actualización','Notas'];
+  const rows = items.map(i=>[i.clave,i.desc,tipoLabel(i.tipo),i.unidad,i.precio,i.rendimiento_base||1,i.proveedor||'',i.fecha||'',i.notas||'']);
+  const ws = XLSX.utils.aoa_to_sheet([header,...rows]);
+  ws['!cols'] = [{wch:12},{wch:45},{wch:12},{wch:10},{wch:16},{wch:16},{wch:20},{wch:16},{wch:30}];
+  XLSX.utils.book_append_sheet(wb, ws, nombre.slice(0,31));
+}
+
+function exportExcelConcentrado(){
+  if(!db.apus.length){ notify('Sin APUs registrados','error'); return; }
+  const wb = XLSX.utils.book_new();
+  const p = db.proyecto;
+  const header = ['#','Clave','Descripción del concepto','Partida','Unidad','P.U. Costo Directo','P.U. Total s/IVA','Cantidad','Importe s/IVA'];
+  const rows = db.apus.map((a,i)=>[ i+1, a.clave||'', a.desc, a.partida, a.unidad, a.pu_cd||0, a.pu_total||0, a.cantidad||0, (a.pu_total||0)*(a.cantidad||0) ]);
+  const totalCD = db.apus.reduce((s,a)=>(a.pu_cd||0)*(a.cantidad||0)+s,0);
+  const factor=(1+(p.indirectos||15)/100)*(1+(p.financiamiento||3)/100)*(1+(p.utilidad||8)/100);
+  const totalPU = db.apus.reduce((s,a)=>(a.pu_total||0)*(a.cantidad||0)+s,0);
+  const iva = totalPU*(p.iva||16)/100;
+  const ws = XLSX.utils.aoa_to_sheet([
+    [`PRESUPUESTO DE OBRA ELÉCTRICA — ${p.nombre||'Sin nombre'}`],
+    [`Empresa: ${p.empresa||'—'}  |  Ubicación: ${p.ubicacion||'—'}  |  Fecha: ${p.fecha||hoy()}`],[''],
+    header,...rows,
+    [''],
+    ['','','','','','SUBTOTAL COSTO DIRECTO:','',''  , totalCD],
+    ['','','','','','INDIRECTOS ('+p.indirectos+'%):'   ,'','',totalCD*(p.indirectos||15)/100],
+    ['','','','','','FINANCIAMIENTO ('+p.financiamiento+'%):','','',totalCD*(p.financiamiento||3)/100],
+    ['','','','','','UTILIDAD ('+p.utilidad+'%):','','',totalCD*(p.utilidad||8)/100],
+    ['','','','','','SUBTOTAL S/IVA:','','',totalPU],
+    ['','','','','','IVA ('+p.iva+'%):','','',iva],
+    ['','','','','','TOTAL DE OBRA C/IVA:','','',totalPU+iva],
+  ]);
+  styleSheetHeader(ws, header.length, 4); // header en fila 4
+  ws['!cols'] = [{wch:4},{wch:12},{wch:50},{wch:14},{wch:8},{wch:20},{wch:20},{wch:12},{wch:18}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Concentrado');
+  // Hoja configuración
+  const cfg = XLSX.utils.aoa_to_sheet([
+    ['Parámetro','Valor'],['Indirectos %',p.indirectos],['Financiamiento %',p.financiamiento],
+    ['Utilidad %',p.utilidad],['IVA %',p.iva]
+  ]);
+  XLSX.utils.book_append_sheet(wb, cfg, 'Configuración');
+  const fname = `Presupuesto_${(p.nombre||'obra').replace(/\s/g,'_')}_${hoy()}.xlsx`;
+  XLSX.writeFile(wb, fname);
+  notify('Concentrado exportado a Excel ✓');
+}
+
+function exportExcelAPUs(){
+  if(!db.apus.length){ notify('Sin APUs registrados','error'); return; }
+  const wb = XLSX.utils.book_new();
+  db.apus.forEach((apu, i)=>{
+    const rows = [
+      [`APU — ${apu.clave||''} — ${apu.desc}`],[`Unidad: ${apu.unidad}  |  Partida: ${apu.partida}  |  Fecha: ${apu.fecha||hoy()}`],[''],
+      ['TIPO','Clave','Descripción','Unidad','Cantidad','Rendim.','Precio Unit.','Importe'],
+    ];
+    const addRows = (items, tipo) => items.forEach(r=>{
+      const imp = tipo==='mo'
+        ? (r.precio*(r.factor_mo||1)) / (r.rendimiento||1)
+        : r.cantidad*(r.rendimiento||1)*r.precio;
+      rows.push([tipoLabel(tipo),r.clave,r.desc,r.unidad,
+        tipo==='mo'?'—':r.cantidad,
+        r.rendimiento||1, r.precio, imp]);
+    });
+    addRows(apu.mat||[], 'mat'); addRows(apu.mo||[], 'mo'); addRows(apu.eq||[], 'eq');
+    const p = db.proyecto;
+    rows.push([''],
+      ['','','','','','COSTO DIRECTO:',apu.pu_cd||0],
+      ['','','','','',`INDIRECTOS ${p.indirectos}%:`,(apu.pu_cd||0)*(p.indirectos||15)/100],
+      ['','','','','',`FINANCIAMIENTO ${p.financiamiento}%:`,(apu.pu_cd||0)*(p.financiamiento||3)/100],
+      ['','','','','',`UTILIDAD ${p.utilidad}%:`,(apu.pu_cd||0)*(p.utilidad||8)/100],
+      ['','','','','','PRECIO UNITARIO:',apu.pu_total||0],
+      ['','','','','',`IVA ${p.iva}%:`,(apu.pu_total||0)*(p.iva||16)/100],
+      ['','','','','','P.U. C/IVA:',(apu.pu_total||0)*(1+(p.iva||16)/100)],
+    );
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:14},{wch:12},{wch:45},{wch:8},{wch:10},{wch:10},{wch:16},{wch:16}];
+    const sheetName = (apu.clave||`APU-${i+1}`).slice(0,31);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  });
+  XLSX.writeFile(wb, `APUs_Detalle_${hoy()}.xlsx`);
+  notify(`${db.apus.length} APUs exportados ✓`);
+}
+
+function exportExcelCompleto(){
+  const p = db.proyecto;
+  const wb = XLSX.utils.book_new();
+  // Info
+  const info = XLSX.utils.aoa_to_sheet([
+    ['CySlean APU — Proyecto Completo'],[''],
+    ['Obra:',p.nombre||'—'],['Empresa:',p.empresa||'—'],
+    ['Ubicación:',p.ubicacion||'—'],['Fecha:',p.fecha||hoy()],[''],
+    ['Parámetro','Valor'],['Indirectos %',p.indirectos],['Financiamiento %',p.financiamiento],
+    ['Utilidad %',p.utilidad],['IVA %',p.iva]
+  ]);
+  XLSX.utils.book_append_sheet(wb, info, 'Portada');
+  // BD
+  addSheetInsumos(wb, db.insumos.filter(i=>i.tipo==='mat'), 'BD-Materiales');
+  addSheetInsumos(wb, db.insumos.filter(i=>i.tipo==='mo'), 'BD-Mano de Obra');
+  addSheetInsumos(wb, db.insumos.filter(i=>i.tipo==='eq'), 'BD-Equipo');
+  // Catálogo
+  if(db.conceptos.length){
+    const hdr=['Clave','Descripción','Partida','Unidad','P.U. Costo Directo'];
+    const rows=db.conceptos.map(c=>[c.clave,c.desc,c.partida,c.unidad,c.pu_cd||0]);
+    const ws=XLSX.utils.aoa_to_sheet([hdr,...rows]);
+    ws['!cols']=[{wch:14},{wch:50},{wch:14},{wch:8},{wch:18}];
+    XLSX.utils.book_append_sheet(wb,ws,'Catálogo');
+  }
+  // Concentrado (hoja sencilla)
+  if(db.apus.length){
+    const hdr=['Clave','Descripción','Partida','Unidad','P.U.','Cantidad','Importe'];
+    const rows=db.apus.map(a=>[a.clave,a.desc,a.partida,a.unidad,a.pu_total||0,a.cantidad||0,(a.pu_total||0)*(a.cantidad||0)]);
+    const ws=XLSX.utils.aoa_to_sheet([hdr,...rows]);
+    ws['!cols']=[{wch:14},{wch:50},{wch:14},{wch:8},{wch:16},{wch:10},{wch:16}];
+    XLSX.utils.book_append_sheet(wb,ws,'Concentrado');
+  }
+  const fname=`${(p.nombre||'Proyecto').replace(/\s/g,'_')}_${hoy()}.xlsx`;
+  XLSX.writeFile(wb, fname);
+  notify('Proyecto completo exportado ✓');
+  closeModal('modal-excel');
+}
+
+function exportBDExcel(){ openModalExcel(); exportExcelBD(); }
+
+function styleSheetHeader(ws, cols, row=1){
+  // SheetJS doesn't support styling in free version — just sets column widths
+}
+
+function tipoLabel(t){ return t==='mat'?'Material':t==='mo'?'Mano de Obra':'Equipo/Herr.'; }
+
+// ============================================================
+// IMPORT FROM EXCEL (SheetJS)
+// ============================================================
+function dragOver(e){ e.preventDefault(); document.getElementById('import-zone').classList.add('drag'); }
+function dragLeave(e){ document.getElementById('import-zone').classList.remove('drag'); }
+function dropFile(e){ e.preventDefault(); dragLeave(e); const f=e.dataTransfer.files[0]; if(f) processXlsxFile(f); }
+function handleXlsxImport(e){ const f=e.target.files[0]; if(f) processXlsxFile(f); e.target.value=''; }
+
+function processXlsxFile(file){
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+      if(json.length < 2){ notify('Archivo vacío o sin datos','error'); return; }
+      // Detect header row (first row with 'clave' or 'descripción')
+      let headerRow = 0;
+      for(let r=0;r<Math.min(5,json.length);r++){
+        const row = json[r].map(c=>String(c).toLowerCase());
+        if(row.some(c=>c.includes('clave')||c.includes('descripci'))||row.some(c=>c.includes('precio'))){ headerRow=r; break; }
+      }
+      const headers = json[headerRow].map(h=>String(h).toLowerCase().trim());
+      const colMap = {
+        clave: findCol(headers,['clave','key','codigo','código']),
+        desc: findCol(headers,['descripci','nombre','desc','concepto','material']),
+        tipo: findCol(headers,['tipo','type','categoria','categoría']),
+        unidad: findCol(headers,['unidad','unit','und']),
+        precio: findCol(headers,['precio','price','costo','cost','importe','valor']),
+        rendimiento: findCol(headers,['rendimiento','rend','rendim','yield']),
+        proveedor: findCol(headers,['proveedor','supplier','marca','brand']),
+        notas: findCol(headers,['notas','nota','note','aplicacion','aplicación']),
+      };
+      pendingXlsxData = [];
+      for(let r=headerRow+1;r<json.length;r++){
+        const row=json[r];
+        if(!row.some(c=>c!=='')) continue;
+        const desc = colMap.desc>=0 ? String(row[colMap.desc]||'').trim() : '';
+        if(!desc) continue;
+        const tipoRaw = colMap.tipo>=0 ? String(row[colMap.tipo]||'').toLowerCase().trim() : '';
+        const tipo = tipoRaw.includes('mo')||tipoRaw.includes('mano')||tipoRaw.includes('obra')||tipoRaw.includes('labor') ? 'mo'
+          : tipoRaw.includes('eq')||tipoRaw.includes('herr')||tipoRaw.includes('maq') ? 'eq' : 'mat';
+        pendingXlsxData.push({
+          id:genId(),
+          clave: colMap.clave>=0?String(row[colMap.clave]||'').trim():`IMP-${r}`,
+          desc, tipo,
+          unidad: colMap.unidad>=0?String(row[colMap.unidad]||'pza').trim():'pza',
+          precio: colMap.precio>=0?+(String(row[colMap.precio]||0).replace(/[$,\s]/g,''))||0:0,
+          rendimiento_base: colMap.rendimiento>=0?+(String(row[colMap.rendimiento]||1).replace(/[,\s]/g,''))||1:1,
+          proveedor: colMap.proveedor>=0?String(row[colMap.proveedor]||'').trim():'',
+          notas: colMap.notas>=0?String(row[colMap.notas]||'').trim():'',
+          fecha: hoy()
+        });
+      }
+      if(!pendingXlsxData.length){ notify('No se encontraron filas válidas','error'); return; }
+      // Preview
+      document.getElementById('import-preview-msg').textContent=`✓ ${pendingXlsxData.length} insumos encontrados en "${file.name}"`;
+      document.getElementById('import-preview-tbody').innerHTML = pendingXlsxData.slice(0,15).map(i=>`<tr>
+        <td style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text2)">${i.clave}</td>
+        <td style="font-size:12px">${i.desc}</td>
+        <td><span class="tag ${i.tipo==='mat'?'tag-mat':i.tipo==='mo'?'tag-mo':'tag-eq'}" style="font-size:10px">${i.tipo.toUpperCase()}</span></td>
+        <td>${i.unidad}</td><td class="number">$${num(i.precio)}</td>
+        <td style="font-size:11px;color:var(--text2)">${i.proveedor}</td>
+      </tr>`).join('') + (pendingXlsxData.length>15?`<tr><td colspan="6" style="text-align:center;color:var(--text3);font-size:11px">... y ${pendingXlsxData.length-15} más</td></tr>`:'');
+      document.getElementById('import-preview').style.display='';
+      document.getElementById('import-confirm-btn').style.display='';
+    }catch(err){ notify('Error al leer el archivo: '+err.message,'error'); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function findCol(headers, keys){ return headers.findIndex(h=>keys.some(k=>h.includes(k))); }
+
+function confirmImportXlsx(){
+  if(!pendingXlsxData.length) return;
+  let added=0, updated=0;
+  pendingXlsxData.forEach(ins=>{
+    const idx = db.insumos.findIndex(i=>i.clave===ins.clave && ins.clave);
+    if(idx>=0){ db.insumos[idx]={...db.insumos[idx],...ins}; updated++; }
+    else{ db.insumos.push(ins); added++; }
+  });
+  saveToStorage(); renderBD(); updateDashboard(); clearImportPreview();
+  notify(`Importados: ${added} nuevos, ${updated} actualizados ✓`);
+}
+function clearImportPreview(){ pendingXlsxData=[]; document.getElementById('import-preview').style.display='none'; document.getElementById('import-confirm-btn').style.display='none'; }
+
+// ============================================================
+// GOOGLE APPS SCRIPT INTEGRATION
+// ============================================================
+let gasUrl = '';
+let gasConnected = false;
+
+function loadGasUrl(){
+  gasUrl = localStorage.getItem('cyslean_gas_url') || '';
+  if(gasUrl){
+    const el = document.getElementById('gas-url');
+    if(el) el.value = gasUrl;
+    setTimeout(()=>testGasConnection(true), 600);
+  }
+  updateSyncUI();
+}
+function saveGasUrl(){
+  gasUrl = (document.getElementById('gas-url').value || '').trim();
+  localStorage.setItem('cyslean_gas_url', gasUrl);
+}
+
+async function testGasConnection(silent=false){
+  saveGasUrl();
+  if(!gasUrl){ notify('Pega la URL de tu Apps Script primero','error'); return; }
+  setDriveStatus('connecting','Probando conexión...');
+  try{
+    // Solo ping — no intenta leer datos todavía
+    const r = await gasGet({action:'ping'});
+    if(r.ok){
+      gasConnected = true;
+      setDriveStatus('connected', `✓ Conectado · ${r.cuenta||'Drive'} · v${r.version||'1.0'}`);
+      const actionsEl = document.getElementById('drive-actions');
+      const syncBtn   = document.getElementById('sync-up-btn');
+      if(actionsEl) actionsEl.style.display = '';
+      if(syncBtn)   syncBtn.style.display   = '';
+      if(!silent) notify('Conexión con Google Drive establecida ✓');
+      updateSyncUI();
+      const ls = localStorage.getItem('cyslean_last_sync');
+      if(ls){
+        const lsEl = document.getElementById('drive-last-sync');
+        if(lsEl){ setText('drive-last-sync','Última sincronización: '+ls); lsEl.style.display=''; }
+      }
+    } else {
+      setDriveStatus('', 'Error: ' + (r.error||'Respuesta inesperada'));
+      if(!silent) notify('Error al conectar: '+(r.error||''),'error');
+    }
+  }catch(e){
+    setDriveStatus('','Sin respuesta — verifica la URL');
+    if(!silent) notify('No se pudo conectar. Verifica la URL.','error');
+  }
+}
+
+async function syncFromDrive(){
+  if(!gasUrl){ notify('Configura la URL de Apps Script en la pestaña Drive','error'); return; }
+  setDriveStatus('connecting','Descargando desde Drive...');
+  try{
+    const r = await gasGet({action:'getAll'});
+    if(!r.ok) throw new Error(r.error||'Error desconocido');
+    let changed = [];
+    if(r.insumos && r.insumos.length){
+      // Merge: actualizar existentes por clave, agregar nuevos
+      r.insumos.forEach(ins=>{
+        const idx = db.insumos.findIndex(i=>i.clave===ins.clave);
+        if(idx>=0) db.insumos[idx]={...db.insumos[idx],...ins};
+        else db.insumos.push({id:genId(),...ins});
+      });
+      changed.push(`${r.insumos.length} insumos`);
+    }
+    if(r.apus && r.apus.length){
+      r.apus.forEach(a=>{
+        const idx = db.apus.findIndex(x=>x.clave===a.clave&&a.clave);
+        if(idx>=0) db.apus[idx]={...db.apus[idx],...a};
+        else db.apus.push({id:genId(),...a});
+      });
+      changed.push(`${r.apus.length} APUs`);
+    }
+    if(r.proyecto && r.proyecto.nombre){ db.proyecto={...db.proyecto,...r.proyecto}; applyProyecto(); changed.push('proyecto'); }
+    saveToStorage(); renderAll();
+    const ts = new Date().toLocaleString('es-MX');
+    localStorage.setItem('cyslean_last_sync', ts);
+    setText('drive-last-sync','Última sincronización: '+ts);
+    document.getElementById('drive-last-sync').style.display='';
+    setDriveStatus('connected','✓ Sincronizado desde Drive');
+    notify(`Drive → Local: ${changed.join(', ')} actualizados ✓`);
+  }catch(e){
+    setDriveStatus('connected','Error al descargar');
+    notify('Error: '+e.message,'error');
+  }
+}
+
+async function syncToDrive(){
+  if(!gasUrl){ notify('Configura la URL de Apps Script','error'); return; }
+  setDriveStatus('connecting','Guardando en Drive...');
+  try{
+    const r = await gasPost({action:'saveAll', data: db});
+    if(!r.ok) throw new Error(r.error||'Error');
+    const ts = new Date().toLocaleString('es-MX');
+    localStorage.setItem('cyslean_last_sync', ts);
+    setText('drive-last-sync','Última sincronización: '+ts);
+    document.getElementById('drive-last-sync').style.display='';
+    setDriveStatus('connected','✓ Guardado en Drive · '+ts);
+    notify('Proyecto guardado en Drive ✓');
+  }catch(e){ setDriveStatus('connected','Error al guardar'); notify('Error: '+e.message,'error'); }
+}
+
+async function driveAction(action){
+  if(!gasUrl){ notify('Configura la URL de Apps Script','error'); return; }
+  let data = action==='saveInsumos'?db.insumos : action==='saveAPUs'?db.apus : db;
+  setDriveStatus('connecting','Guardando...');
+  try{
+    const r = await gasPost({action, data});
+    if(!r.ok) throw new Error(r.error||'Error');
+    setDriveStatus('connected','✓ Guardado en Drive');
+    notify({saveInsumos:'BD guardada',saveAPUs:'APUs guardados',saveAll:'Todo guardado'}[action]+' en Drive ✓');
+  }catch(e){ setDriveStatus('connected','Error'); notify('Error: '+e.message,'error'); }
+}
+
+// Fetch helpers — usamos un proxy JSONP vía callback para evitar CORS en GET
+// JSONP para GET — evita CORS en archivos locales y navegadores restrictivos
+function gasGet(params){
+  return new Promise((resolve, reject)=>{
+    const cbName = 'cyslean_cb_' + Date.now();
+    const url = new URL(gasUrl);
+    Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+    url.searchParams.set('callback', cbName);
+
+    const script = document.createElement('script');
+    const timer = setTimeout(()=>{
+      cleanup();
+      reject(new Error('Timeout — sin respuesta del script'));
+    }, 10000);
+
+    window[cbName] = (data) => { cleanup(); resolve(data); };
+    function cleanup(){ clearTimeout(timer); delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); }
+
+    script.onerror = () => { cleanup(); reject(new Error('Error al cargar el script')); };
+    script.src = url.toString();
+    document.head.appendChild(script);
+  });
+}
+
+async function gasPost(body){
+  // Para POST usamos fetch con mode no-cors como fallback, o JSONP si falla
+  try {
+    const r = await fetch(gasUrl, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify(body)
+    });
+    return r.json();
+  } catch(e) {
+    // Fallback: enviar como GET con payload codificado (para operaciones pequeñas)
+    const payload = encodeURIComponent(JSON.stringify(body));
+    return gasGet({ action: body.action, payload });
+  }
+}
+
+
+function setDriveStatus(state, msg){
+  const dot=document.getElementById('drive-dot'); const txt=document.getElementById('drive-status-text');
+  dot.className='drive-dot'+(state?' '+state:''); txt.textContent=msg;
+}
+
+// Auto-sync banner en el header
+function addSyncBadge(){
+  if(!gasUrl) return;
+  const el = document.getElementById('obra-badge');
+  if(el && gasConnected) el.title = '☁ Drive conectado';
+}
+
+// Removed old OAuth Drive functions (replaced by Apps Script)
+function connectDrive(){}
+function disconnectDrive(){}
+function saveToDrive(type){ syncToDrive(); }
+function listDriveFiles(){}
+function downloadFromDrive(){}
+function loadGClientId(){ loadGasUrl(); }
+function saveGClientId(){}
+
+
+
+
+// JSON backup
+function exportData(){
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`cyslean_apu_${(db.proyecto.nombre||'proyecto').replace(/\s/g,'_')}_${hoy()}.json`; a.click();
+  notify('Proyecto exportado (JSON) ✓');
+}
+function importData(){ document.getElementById('import-file').click(); }
+function handleImport(e){
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=(ev)=>{ try{ db=JSON.parse(ev.target.result); saveToStorage(); applyProyecto(); renderAll(); notify('Proyecto importado ✓'); }catch(er){ notify('Error al importar','error'); } };
+  reader.readAsText(file);
+}
+function exportBD(){
+  const blob=new Blob([JSON.stringify({insumos:db.insumos},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`cyslean_bd_${hoy()}.json`; a.click();
+  notify('BD exportada (JSON) ✓');
+}
+function exportCSV(){
+  if(!db.apus.length){ notify('Sin APUs para exportar','error'); return; }
+  let csv='Clave,Descripción,Partida,Unidad,PU Costo Directo,PU Total,Cantidad,Importe\n';
+  db.apus.forEach(a=>{ const imp=(a.pu_total||0)*(a.cantidad||0); csv+=`"${a.clave}","${a.desc}","${a.partida}","${a.unidad}",${a.pu_cd||0},${a.pu_total||0},${a.cantidad||0},${imp}\n`; });
+  const blob=new Blob([csv],{type:'text/csv'}); const l=document.createElement('a');
+  l.href=URL.createObjectURL(blob); l.download=`concentrado_${hoy()}.csv`; l.click();
+  notify('CSV exportado ✓');
+}
+
+function num(v){ return (+v||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function numK(v){ if(v>=1000000) return (v/1000000).toFixed(2)+'M'; if(v>=1000) return (v/1000).toFixed(1)+'K'; return num(v); }
+function setText(id,t){ const el=document.getElementById(id); if(el) el.textContent=t; }
+function setStyle(id,prop,val){ const el=document.getElementById(id); if(el) el.style[prop]=val; }
+function clearForm(ids){ ids.forEach(id=>setValue(id,'')); }
+function genId(){ return Math.random().toString(36).slice(2,10); }
+function hoy(){ return new Date().toISOString().slice(0,10); }
+
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+function notify(msg, type='success'){
+  const container = document.getElementById('notify-container');
+  const el = document.createElement('div');
+  el.className = 'notif' + (type === 'error' ? ' error' : '');
+  el.textContent = (type === 'error' ? '⚠ ' : ' ✓ ') + msg;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .3s';
+    setTimeout(() => el.remove(), 300);
+  }, 2800);
+}
+
+// ============================================================
+// JSON BACKUP
+// ============================================================
+function exportData(){
+  const blob = new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cyslean_apu_${(db.proyecto.nombre||'proyecto').replace(/\s/g,'_')}_${hoy()}.json`;
+  a.click();
+  notify('Proyecto exportado (JSON) ✓');
+}
+function importData(){ document.getElementById('import-file').click(); }
+function handleImport(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      db = JSON.parse(ev.target.result);
+      saveToStorage(); applyProyecto(); renderAll();
+      notify('Proyecto importado ✓');
+    } catch(er) { notify('Error al importar','error'); }
+  };
+  reader.readAsText(file);
+}
+function exportBD(){
+  const blob = new Blob([JSON.stringify({insumos:db.insumos},null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cyslean_bd_${hoy()}.json`;
+  a.click();
+  notify('BD exportada (JSON) ✓');
+}
+function exportCSV(){
+  if(!db.apus.length){ notify('Sin APUs para exportar','error'); return; }
+  let csv = 'Clave,Descripción,Partida,Unidad,PU Costo Directo,PU Total,Cantidad,Importe\n';
+  db.apus.forEach(a => {
+    const imp = (a.pu_total||0)*(a.cantidad||0);
+    csv += `"${a.clave}","${a.desc}","${a.partida}","${a.unidad}",${a.pu_cd||0},${a.pu_total||0},${a.cantidad||0},${imp}\n`;
+  });
+  const blob = new Blob([csv],{type:'text/csv'});
+  const l = document.createElement('a');
+  l.href = URL.createObjectURL(blob);
+  l.download = `concentrado_${hoy()}.csv`;
+  l.click();
+  notify('CSV exportado ✓');
+}
+
+
+// HELPERS
+// ============================================================
+function num(v){ return (+v||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function numK(v){ if(v>=1000000) return (v/1000000).toFixed(2)+'M'; if(v>=1000) return (v/1000).toFixed(1)+'K'; return num(v); }
+function setText(id,t){ const el=document.getElementById(id); if(el) el.textContent=t; }
+function setStyle(id,prop,val){ const el=document.getElementById(id); if(el) el.style[prop]=val; }
+function clearForm(ids){ ids.forEach(id=>setValue(id,'')); }
+function genId(){ return Math.random().toString(36).slice(2,10); }
+function hoy(){ return new Date().toISOString().slice(0,10); }
+
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+</script>
+</body>
+</html>
