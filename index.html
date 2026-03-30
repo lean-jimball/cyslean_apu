@@ -225,6 +225,56 @@ tr:hover td{background:rgba(0,212,255,0.03)}
 .import-zone p{font-size:13px;color:var(--text2)}
 .gapi-config{background:rgba(255,107,0,0.08);border:1px solid rgba(255,107,0,0.2);border-radius:6px;padding:12px 16px;font-size:12px;color:var(--text2);margin-bottom:12px}
 .gapi-config input{background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:6px 10px;border-radius:4px;font-size:12px;width:100%;margin-top:6px;font-family:'IBM Plex Mono',monospace}
+
+/* PROPUESTA COMERCIAL */
+.prop-preview{background:#fff;color:#1a1a1a;border-radius:8px;box-shadow:0 4px 32px rgba(0,0,0,.4);max-width:860px;margin:0 auto;font-family:'Arial',sans-serif}
+.prop-header{background:linear-gradient(135deg,#0a0e1a 0%,#1a2235 100%);padding:28px 36px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:flex-start}
+.prop-logo-text{font-size:26px;font-weight:700;color:#00d4ff;letter-spacing:2px}
+.prop-logo-sub{font-size:10px;color:#8899bb;letter-spacing:1px;margin-top:2px}
+.prop-folio-box{text-align:right}
+.prop-folio{font-family:'Courier New',monospace;font-size:13px;color:#00d4ff;font-weight:700}
+.prop-fecha{font-size:11px;color:#8899bb;margin-top:4px}
+.prop-body{padding:28px 36px}
+.prop-section{margin-bottom:22px}
+.prop-section-title{font-size:10px;font-weight:700;color:#8899bb;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e8edf5}
+.prop-client-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}
+.prop-client-row{font-size:12px}
+.prop-client-label{color:#8899bb;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.prop-client-val{color:#1a1a1a;font-weight:600;margin-top:1px}
+.prop-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.prop-table th{background:#0a0e1a;color:#00d4ff;padding:8px 10px;text-align:left;font-size:10px;letter-spacing:.5px;text-transform:uppercase}
+.prop-table th.right{text-align:right}
+.prop-table td{padding:8px 10px;border-bottom:1px solid #f0f4f8;vertical-align:top}
+.prop-table tr:nth-child(even) td{background:#f8fafc}
+.prop-table td.right{text-align:right;font-family:'Courier New',monospace}
+.prop-table td.clave{font-family:'Courier New',monospace;font-size:11px;color:#8899bb;white-space:nowrap}
+.prop-totals{margin-top:16px;display:flex;justify-content:flex-end}
+.prop-totals-box{min-width:280px}
+.prop-total-row{display:flex;justify-content:space-between;padding:5px 10px;font-size:12px}
+.prop-total-row.subtotal{border-top:1px solid #e8edf5}
+.prop-total-row.grand{background:#0a0e1a;color:#fff;border-radius:4px;font-weight:700;font-size:13px;margin-top:6px;padding:10px 12px}
+.prop-total-row.grand span:last-child{color:#00d4ff;font-family:'Courier New',monospace}
+.prop-conds{background:#f8fafc;border-radius:6px;padding:14px 16px;font-size:11px;color:#4a5568;line-height:1.8}
+.prop-conds strong{color:#1a1a1a}
+.prop-footer{background:#0a0e1a;padding:14px 36px;border-radius:0 0 8px 8px;display:flex;justify-content:space-between;align-items:center}
+.prop-footer span{font-size:10px;color:#4a5568}
+.prop-stamp{border:2px solid #00d4ff;border-radius:6px;padding:6px 14px;font-size:10px;color:#00d4ff;font-family:'Courier New',monospace;opacity:.6}
+/* Selector de conceptos */
+.concepto-check-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
+.concepto-check-row:hover{background:rgba(0,212,255,0.04)}
+.concepto-check-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;margin-top:2px;cursor:pointer}
+.concepto-check-row .cc-info{flex:1}
+.concepto-check-row .cc-clave{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)}
+.concepto-check-row .cc-desc{font-size:13px;color:var(--text)}
+.concepto-check-row .cc-right{text-align:right;flex-shrink:0}
+.concepto-check-row .cc-pu{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent)}
+/* Print */
+@media print{
+  body{background:#fff}
+  .scanline,.save-bar,header,.nav-tabs,.prop-controls,.no-print{display:none!important}
+  .prop-preview{box-shadow:none;max-width:100%;border-radius:0}
+  .main{padding:0}
+}
 </style>
 </head>
 <body>
@@ -262,6 +312,7 @@ tr:hover td{background:rgba(0,212,255,0.03)}
   <div class="tab" onclick="openTab('catalogo')" id="tab-catalogo"><span class="icon">📦</span> Catálogo Base</div>
   <div class="tab" onclick="openTab('apu')" id="tab-apu"><span class="icon">⚡</span> Análisis APU</div>
   <div class="tab" onclick="openTab('concentrado')" id="tab-concentrado"><span class="icon">📋</span> Concentrado</div>
+  <div class="tab" onclick="openTab('propuesta')" id="tab-propuesta"><span class="icon">📄</span> Propuesta</div>
   <div class="tab" onclick="openTab('bd')" id="tab-bd"><span class="icon">🗄</span> Base de Datos</div>
 </div>
 
@@ -608,6 +659,111 @@ tr:hover td{background:rgba(0,212,255,0.03)}
           </tr>
         </tfoot>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======== PROPUESTA COMERCIAL ======== -->
+<div class="page" id="page-propuesta">
+  <div class="prop-controls no-print" style="display:grid;grid-template-columns:1fr 360px;gap:16px;margin-bottom:20px">
+
+    <!-- Configuración -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚙ Configuración de la propuesta</div>
+        <div class="flex gap-8">
+          <button class="btn btn-secondary btn-sm" onclick="generarFolio()">🔢 Nuevo folio</button>
+          <button class="btn btn-primary btn-sm" onclick="renderPropuesta()">🔄 Actualizar</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-row cols3">
+          <div class="form-group">
+            <label>Folio</label>
+            <input type="text" id="prop-folio" placeholder="2024-0101-001" style="font-family:'IBM Plex Mono',monospace" oninput="renderPropuesta()">
+          </div>
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" id="prop-fecha" oninput="renderPropuesta()">
+          </div>
+          <div class="form-group">
+            <label>Vigencia (días)</label>
+            <input type="number" id="prop-vigencia" value="30" min="1" oninput="renderPropuesta()">
+          </div>
+        </div>
+        <div class="form-row cols2">
+          <div class="form-group">
+            <label>Cliente / Empresa</label>
+            <input type="text" id="prop-cliente" placeholder="Empresa del cliente" oninput="renderPropuesta()">
+          </div>
+          <div class="form-group">
+            <label>Atención a</label>
+            <input type="text" id="prop-atencion" placeholder="Nombre del contacto" oninput="renderPropuesta()">
+          </div>
+        </div>
+        <div class="form-row cols2">
+          <div class="form-group">
+            <label>Dirección / Obra</label>
+            <input type="text" id="prop-direccion" placeholder="Ubicación de la obra" oninput="renderPropuesta()">
+          </div>
+          <div class="form-group">
+            <label>Teléfono / Email cliente</label>
+            <input type="text" id="prop-contacto" placeholder="tel / email" oninput="renderPropuesta()">
+          </div>
+        </div>
+        <div class="form-row cols2">
+          <div class="form-group">
+            <label>Empresa oferente</label>
+            <input type="text" id="prop-empresa-oferente" placeholder="Tu empresa" oninput="renderPropuesta()">
+          </div>
+          <div class="form-group">
+            <label>Elaboró</label>
+            <input type="text" id="prop-elaboro" placeholder="Nombre y cargo" oninput="renderPropuesta()">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Condiciones de pago</label>
+            <input type="text" id="prop-condpago" value="50% anticipo, 50% contra entrega" oninput="renderPropuesta()">
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:4px;font-size:12px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-clave" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Mostrar clave</label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-pu" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Mostrar P.U.</label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-iva" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Desglosar IVA</label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-precio-iva" onchange="renderPropuesta()" style="accent-color:var(--accent)"> Precio c/IVA en tabla</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selector de conceptos -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">✅ Seleccionar conceptos</div>
+        <div class="flex gap-8">
+          <button class="btn btn-secondary btn-sm" onclick="toggleAllConceptos(true)">Todo</button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleAllConceptos(false)">Ninguno</button>
+        </div>
+      </div>
+      <div id="prop-concepto-list" style="max-height:340px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+  <!-- Botones de exportar -->
+  <div class="flex-between no-print" style="margin-bottom:16px">
+    <div style="font-size:12px;color:var(--text2)">Vista previa de la propuesta — edita los campos arriba para actualizar</div>
+    <div class="flex gap-8">
+      <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimir / PDF</button>
+      <button class="btn btn-primary" onclick="exportPropuestaPDF()">📄 Exportar PDF</button>
+    </div>
+  </div>
+
+  <!-- Vista previa -->
+  <div id="prop-preview-wrapper">
+    <div class="prop-preview" id="prop-preview">
+      <div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">
+        Selecciona conceptos y llena los datos para generar la propuesta
+      </div>
     </div>
   </div>
 </div>
@@ -1050,13 +1206,14 @@ function openTab(name){
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   const page = document.getElementById('page-'+name);
-  const tab = document.getElementById('tab-'+name);
+  const tab  = document.getElementById('tab-'+name);
   if(page) page.classList.add('active');
-  if(tab) tab.classList.add('active');
+  if(tab)  tab.classList.add('active');
   if(name==='concentrado') renderConcentrado();
   if(name==='bd') renderBD();
   if(name==='catalogo') renderCatalogo();
   if(name==='dashboard') updateDashboard();
+  if(name==='propuesta') initPropuesta();
 }
 
 // ============================================================
@@ -2089,6 +2246,215 @@ function exportCSV(){
 }
 
 
+// ============================================================
+// PROPUESTA COMERCIAL
+// ============================================================
+let propSelectedIds = new Set();
+
+function initPropuesta(){
+  const hoyStr = new Date().toISOString().slice(0,10);
+  setValue('prop-fecha', hoyStr);
+  const p = db.proyecto;
+  if(p.empresa) setValue('prop-empresa-oferente', p.empresa);
+  if(p.ubicacion) setValue('prop-direccion', p.ubicacion);
+  if(!val('prop-folio')) generarFolio();
+  renderConceptoSelector();
+  renderPropuesta();
+}
+
+function generarFolio(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const prefix = `${y}-${m}${d}`;
+  const key = `cyslean_folio_${prefix}`;
+  let counter = parseInt(localStorage.getItem(key)||'0') + 1;
+  localStorage.setItem(key, counter);
+  const folio = `${prefix}-${String(counter).padStart(3,'0')}`;
+  setValue('prop-folio', folio);
+  renderPropuesta();
+  notify(`Folio generado: ${folio}`);
+}
+
+function renderConceptoSelector(){
+  const container = document.getElementById('prop-concepto-list');
+  if(!container) return;
+  if(!db.apus.length){
+    container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Sin APUs registrados.<br>Crea APUs en ⚡ Análisis APU</div>`;
+    return;
+  }
+  const byPartida = {};
+  db.apus.forEach(a => { const p=a.partida||'General'; if(!byPartida[p]) byPartida[p]=[]; byPartida[p].push(a); });
+  let html = '';
+  for(const [partida, items] of Object.entries(byPartida)){
+    html += `<div style="padding:6px 12px;background:var(--surface3);font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase">${partida}</div>`;
+    items.forEach(apu => {
+      const checked = propSelectedIds.has(apu.id) ? 'checked' : '';
+      html += `<div class="concepto-check-row" onclick="toggleConcepto('${apu.id}',event)">
+        <input type="checkbox" ${checked} id="chk-${apu.id}" onclick="event.stopPropagation();toggleConcepto('${apu.id}',event)">
+        <div class="cc-info">
+          <div class="cc-clave">${apu.clave||'—'}</div>
+          <div class="cc-desc">${apu.desc.length>52?apu.desc.slice(0,52)+'…':apu.desc}</div>
+        </div>
+        <div class="cc-right">
+          <div class="cc-pu">$${num(apu.pu_total||0)}</div>
+          <div style="font-size:10px;color:var(--text3)">${apu.unidad}</div>
+        </div>
+      </div>`;
+    });
+  }
+  container.innerHTML = html;
+}
+
+function toggleConcepto(id, event){
+  if(event) event.stopPropagation();
+  const chk = document.getElementById('chk-'+id);
+  if(propSelectedIds.has(id)){ propSelectedIds.delete(id); if(chk) chk.checked=false; }
+  else { propSelectedIds.add(id); if(chk) chk.checked=true; }
+  renderPropuesta();
+}
+
+function toggleAllConceptos(val_){
+  db.apus.forEach(a => val_ ? propSelectedIds.add(a.id) : propSelectedIds.delete(a.id));
+  renderConceptoSelector();
+  renderPropuesta();
+}
+
+function renderPropuesta(){
+  const preview = document.getElementById('prop-preview');
+  if(!preview) return;
+  const folio     = val('prop-folio')||'—';
+  const fecha     = val('prop-fecha')||hoy();
+  const vigencia  = val('prop-vigencia')||'30';
+  const cliente   = val('prop-cliente')||'Cliente';
+  const atencion  = val('prop-atencion')||'';
+  const direccion = val('prop-direccion')||'';
+  const contacto  = val('prop-contacto')||'';
+  const oferente  = val('prop-empresa-oferente')||(db.proyecto.empresa||'CySlean APU');
+  const elaboro   = val('prop-elaboro')||'';
+  const condpago  = val('prop-condpago')||'50% anticipo, 50% contra entrega';
+  const showClave = document.getElementById('prop-show-clave')?.checked;
+  const showPU    = document.getElementById('prop-show-pu')?.checked;
+  const showIva   = document.getElementById('prop-show-iva')?.checked;
+  const precioIva = document.getElementById('prop-precio-iva')?.checked;
+  const p = db.proyecto;
+  const ivaRate = (p.iva||16)/100;
+  const selected = db.apus.filter(a => propSelectedIds.has(a.id));
+  if(!selected.length){
+    preview.innerHTML=`<div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">Selecciona al menos un concepto para generar la propuesta</div>`;
+    return;
+  }
+  let subtotal=0;
+  selected.forEach(a=>{ subtotal+=(a.pu_total||0)*(a.cantidad||1); });
+  const ivaAmt=subtotal*ivaRate, total=subtotal+ivaAmt;
+  const fechaObj=new Date(fecha+'T12:00:00');
+  const fechaFmt=fechaObj.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
+  const vigDate=new Date(fechaObj); vigDate.setDate(vigDate.getDate()+parseInt(vigencia));
+  const vigFmt=vigDate.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
+  const thClave=showClave?`<th style="width:90px;color:#00d4ff">Clave</th>`:'';
+  const thPU=showPU?`<th class="right" style="width:110px;color:#00d4ff">P.U.</th>`:'';
+  let rows='';
+  selected.forEach(apu=>{
+    const qty=apu.cantidad||1;
+    const pu=precioIva?(apu.pu_total||0)*(1+ivaRate):(apu.pu_total||0);
+    const imp=pu*qty;
+    rows+=`<tr>
+      ${showClave?`<td class="clave">${apu.clave||'—'}</td>`:''}
+      <td>${apu.desc}</td>
+      <td class="right">${apu.unidad}</td>
+      <td class="right">${qty}</td>
+      ${showPU?`<td class="right">$${num(pu)}</td>`:''}
+      <td class="right" style="font-weight:600">$${num(imp)}</td>
+    </tr>`;
+  });
+  let totalesHtml=`<div class="prop-total-row subtotal"><span>Subtotal</span><span style="font-family:'Courier New',monospace">$${num(subtotal)}</span></div>`;
+  if(showIva) totalesHtml+=`<div class="prop-total-row"><span>IVA (${p.iva||16}%)</span><span style="font-family:'Courier New',monospace">$${num(ivaAmt)}</span></div>`;
+  totalesHtml+=`<div class="prop-total-row grand"><span>TOTAL${showIva?' c/IVA':''}</span><span>$${num(showIva?total:subtotal)}</span></div>`;
+
+  preview.innerHTML=`
+  <div class="prop-header">
+    <div>
+      <div class="prop-logo-text">${oferente}</div>
+      <div class="prop-logo-sub">Instalaciones Eléctricas · Propuesta Comercial</div>
+    </div>
+    <div class="prop-folio-box">
+      <div class="prop-folio">FOLIO: ${folio}</div>
+      <div class="prop-fecha">${fechaFmt}</div>
+      <div class="prop-fecha" style="margin-top:2px">Vigencia: ${vigencia} días · hasta ${vigFmt}</div>
+    </div>
+  </div>
+  <div class="prop-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+      <div class="prop-section">
+        <div class="prop-section-title">Cliente</div>
+        <div class="prop-client-grid">
+          <div class="prop-client-row"><div class="prop-client-label">Empresa</div><div class="prop-client-val">${cliente}</div></div>
+          ${atencion?`<div class="prop-client-row"><div class="prop-client-label">Atención a</div><div class="prop-client-val">${atencion}</div></div>`:''}
+          ${direccion?`<div class="prop-client-row" style="grid-column:span 2"><div class="prop-client-label">Obra / Dirección</div><div class="prop-client-val">${direccion}</div></div>`:''}
+          ${contacto?`<div class="prop-client-row"><div class="prop-client-label">Contacto</div><div class="prop-client-val">${contacto}</div></div>`:''}
+        </div>
+      </div>
+      <div class="prop-section">
+        <div class="prop-section-title">Oferente</div>
+        <div class="prop-client-grid">
+          <div class="prop-client-row"><div class="prop-client-label">Empresa</div><div class="prop-client-val">${oferente}</div></div>
+          ${elaboro?`<div class="prop-client-row"><div class="prop-client-label">Elaboró</div><div class="prop-client-val">${elaboro}</div></div>`:''}
+          <div class="prop-client-row"><div class="prop-client-label">Proyecto</div><div class="prop-client-val">${db.proyecto.nombre||'—'}</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="prop-section">
+      <div class="prop-section-title">Conceptos de trabajo</div>
+      <table class="prop-table">
+        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:60px">Unidad</th><th class="right" style="width:70px">Cant.</th>${thPU}<th class="right" style="width:120px">Importe</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="prop-totals"><div class="prop-totals-box">${totalesHtml}</div></div>
+    </div>
+    <div class="prop-section">
+      <div class="prop-section-title">Condiciones</div>
+      <div class="prop-conds">
+        <strong>Forma de pago:</strong> ${condpago}<br>
+        <strong>Vigencia:</strong> ${vigencia} días a partir de la fecha de emisión (${vigFmt})<br>
+        <strong>Incluye:</strong> Suministro de materiales, mano de obra, herramienta y equipo necesarios para la correcta ejecución de los trabajos descritos<br>
+        <strong>No incluye:</strong> Trabajos de obra civil, permisos y derechos ante dependencias, salvo pacto en contrario<br>
+        <strong>Precios:</strong> Expresados en moneda nacional (MXN). ${showIva?'IVA incluido en el total.':'IVA no incluido, se desglosará en factura.'}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:32px;padding-top:20px;border-top:1px solid #e8edf5">
+      <div style="text-align:center">
+        <div style="border-top:1px solid #1a1a1a;margin-top:50px;padding-top:8px;font-size:11px;color:#4a5568">${oferente}</div>
+        <div style="font-size:10px;color:#8899bb">${elaboro||'Firma del oferente'}</div>
+      </div>
+      <div style="text-align:center">
+        <div style="border-top:1px solid #1a1a1a;margin-top:50px;padding-top:8px;font-size:11px;color:#4a5568">${cliente}</div>
+        <div style="font-size:10px;color:#8899bb">Firma y sello de aceptación</div>
+      </div>
+    </div>
+  </div>
+  <div class="prop-footer">
+    <span>${oferente} · Propuesta Comercial · ${fechaFmt}</span>
+    <div class="prop-stamp">${folio}</div>
+  </div>`;
+}
+
+function exportPropuestaPDF(){
+  const preview = document.getElementById('prop-preview');
+  if(!preview||!preview.innerHTML.includes('prop-header')){ notify('Genera la propuesta primero','error'); return; }
+  const folio=val('prop-folio');
+  if(folio){
+    const folios=JSON.parse(localStorage.getItem('cyslean_folios')||'[]');
+    if(!folios.find(f=>f.folio===folio)){
+      folios.push({folio,cliente:val('prop-cliente'),fecha:val('prop-fecha'),ts:new Date().toISOString()});
+      localStorage.setItem('cyslean_folios',JSON.stringify(folios));
+    }
+  }
+  window.print();
+  notify(`Propuesta ${folio} — guarda como PDF desde el diálogo de impresión`);
+}
+
+// ============================================================
 // HELPERS
 // ============================================================
 function num(v){ return (+v||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
