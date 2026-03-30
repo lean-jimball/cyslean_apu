@@ -474,7 +474,7 @@ tr:hover td{background:rgba(0,212,255,0.03)}
       <div style="display:flex;gap:16px;margin-bottom:12px;padding:8px 14px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);font-size:11px;flex-wrap:wrap">
         <span style="color:var(--text2);font-weight:600;letter-spacing:.5px;font-family:'IBM Plex Mono',monospace">FÓRMULAS:</span>
         <span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace">MAT</span> <span style="color:var(--text2)">= Cantidad × </span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace">Rendim.</span><span style="color:var(--text2)"> × Precio</span></span>
-        <span><span style="color:var(--accent3);font-family:'IBM Plex Mono',monospace">M.O.</span> <span style="color:var(--text2)">= </span><span style="color:var(--accent3);font-family:'IBM Plex Mono',monospace">Rendim.</span><span style="color:var(--text2)"> × Factor × Salario</span></span>
+        <span><span style="color:var(--accent3);font-family:'IBM Plex Mono',monospace">M.O.</span> <span style="color:var(--text2)">= (Salario × </span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace">Factor</span><span style="color:var(--text2)">) ÷ </span><span style="color:var(--accent3);font-family:'IBM Plex Mono',monospace">Rendim.</span></span>
         <span><span style="color:var(--accent2);font-family:'IBM Plex Mono',monospace">EQ</span> <span style="color:var(--text2)">= Cantidad × </span><span style="color:var(--accent2);font-family:'IBM Plex Mono',monospace">Rendim.</span><span style="color:var(--text2)"> × Costo</span></span>
         <span style="color:var(--text3);margin-left:auto">El <span style="color:var(--gold)">Rendim.</span> viene de la BD y es editable por insumo</span>
       </div>
@@ -501,7 +501,7 @@ tr:hover td{background:rgba(0,212,255,0.03)}
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Clave</th><th>Categoría</th><th>Unidad</th><th class="number" title="Cuántas jornadas o horas por unidad de concepto">Rendim.</th><th class="number" title="Factor prestaciones aplicado al salario">Factor</th><th class="number">Salario</th><th class="number">Importe</th><th></th></tr></thead>
+            <thead><tr><th>Clave</th><th>Categoría</th><th>Unidad</th><th class="number" title="Unidades producidas por jornada (ej: 100 ml/jor). Importe = (Salario × Factor) ÷ Rendim.">Rendim.</th><th class="number" title="Factor de prestaciones aplicado al salario">Factor</th><th class="number">Salario</th><th class="number">Importe</th><th></th></tr></thead>
             <tbody id="tbody-mo"></tbody>
           </table>
         </div>
@@ -1332,8 +1332,8 @@ function renderInsumos(){
   if(!mo.length) tbodMO.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:12px;font-size:12px">Sin mano de obra — agrega desde la BD</td></tr>`;
   else tbodMO.innerHTML = mo.map((row,i)=>{
     const factor = row.factor_mo||1;
-    const imp = row.rendimiento * factor * row.precio;
-    return `<tr title="Importe = Rendimiento × Factor SMLV × Salario">
+    const imp = (row.precio * factor) / (row.rendimiento||1);
+    return `<tr title="Importe = (Salario × Factor) ÷ Rendimiento">
       <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${row.clave}</td>
       <td style="font-size:12px">${row.desc}</td>
       <td style="font-size:12px">${row.unidad}</td>
@@ -1382,7 +1382,7 @@ function updateInsumoVal(tipo,i,field,v){
   const row = currentAPU[tipo][i];
   let imp = 0;
   if(tipo==='mo'){
-    imp = (row.rendimiento||1) * (row.factor_mo||1) * row.precio;
+    imp = (row.precio * (row.factor_mo||1)) / (row.rendimiento||1);
   } else {
     imp = row.cantidad * (row.rendimiento||1) * row.precio;
   }
@@ -1393,7 +1393,7 @@ function updateInsumoVal(tipo,i,field,v){
     const lastDataCell = cells[cells.length-2]; // importe es penúltima celda
     lastDataCell.textContent = '$'+num(imp);
     lastDataCell.title = tipo==='mo'
-      ? `${row.rendimiento||1} × ${row.factor_mo||1} × $${num(row.precio)}`
+      ? `($${num(row.precio)} × ${row.factor_mo||1}) ÷ ${row.rendimiento||1}`
       : `${row.cantidad} × ${row.rendimiento||1} × $${num(row.precio)}`;
   }
   calcularAPU();
@@ -1402,8 +1402,8 @@ function removeInsumo(tipo,i){ currentAPU[tipo].splice(i,1); renderInsumos(); ca
 function calcularAPU(){
   // MAT: cantidad × rendimiento × precio
   const mat = currentAPU.mat.reduce((a,r)=>a + r.cantidad*(r.rendimiento||1)*r.precio, 0);
-  // MO:  rendimiento × factor_mo × precio
-  const mo  = currentAPU.mo.reduce((a,r)=>a + (r.rendimiento||1)*(r.factor_mo||1)*r.precio, 0);
+  // MO:  (salario × factor) / rendimiento  ← fórmula Neodata
+  const mo  = currentAPU.mo.reduce((a,r)=>a + (r.precio*(r.factor_mo||1)) / (r.rendimiento||1), 0);
   // EQ:  cantidad × rendimiento × precio
   const eq  = currentAPU.eq.reduce((a,r)=>a + r.cantidad*(r.rendimiento||1)*r.precio, 0);
   const cd = mat+mo+eq;
@@ -1435,7 +1435,7 @@ function guardarAPU(){
   if(!desc){ notify('Escribe una descripción del concepto','error'); return; }
   const p = db.proyecto;
   const mat = currentAPU.mat.reduce((a,r)=>a+r.cantidad*(r.rendimiento||1)*r.precio,0);
-  const mo  = currentAPU.mo.reduce((a,r)=>a+(r.rendimiento||1)*(r.factor_mo||1)*r.precio,0);
+  const mo  = currentAPU.mo.reduce((a,r)=>a+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0);
   const eq  = currentAPU.eq.reduce((a,r)=>a+r.cantidad*(r.rendimiento||1)*r.precio,0);
   const cd=mat+mo+eq;
   const factor=(1+(p.indirectos||15)/100)*(1+(p.financiamiento||3)/100)*(1+(p.utilidad||8)/100);
@@ -1520,7 +1520,7 @@ function updateDashboard(){
   db.apus.forEach(a=>{
     const q = a.cantidad||0;
     const mat = a.mat?a.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0):0;
-    const mo  = a.mo ?a.mo.reduce((s,r)=>s+(r.rendimiento||1)*(r.factor_mo||1)*r.precio,0):0;
+    const mo  = a.mo ?a.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0):0;
     const eq  = a.eq ?a.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0):0;
     const factor=(1+(p.indirectos||15)/100)*(1+(p.financiamiento||3)/100)*(1+(p.utilidad||8)/100);
     totalImporte += (a.pu_total||0)*q;
@@ -1648,7 +1648,7 @@ function exportExcelAPUs(){
     ];
     const addRows = (items, tipo) => items.forEach(r=>{
       const imp = tipo==='mo'
-        ? (r.rendimiento||1)*(r.factor_mo||1)*r.precio
+        ? (r.precio*(r.factor_mo||1)) / (r.rendimiento||1)
         : r.cantidad*(r.rendimiento||1)*r.precio;
       rows.push([tipoLabel(tipo),r.clave,r.desc,r.unidad,
         tipo==='mo'?'—':r.cantidad,
