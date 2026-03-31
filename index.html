@@ -2380,15 +2380,14 @@ function renderPropuesta(){
   selected.forEach(a=>{
     const qty = a.cantidad||1;
     subtotal += (a.pu_total||0)*qty;
-    // Materiales = suma de insumos tipo mat con rendimiento
     const matCD = a.mat ? a.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
-    totalMat += matCD * qty;
-    // "Mano de obra integral" = todo lo que NO es materiales (MO + EQ + indirectos + fin + utilidad)
-    const moCD  = a.mo  ? a.mo.reduce( (s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0;
-    const eqCD  = a.eq  ? a.eq.reduce( (s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
+    const moCD  = a.mo  ? a.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0;
+    const eqCD  = a.eq  ? a.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
     const cd    = matCD + moCD + eqCD;
     const extra = cd * ((p.indirectos||15)/100 + (p.financiamiento||3)/100 + (p.utilidad||8)/100);
-    totalMO += (moCD + eqCD + extra) * qty;
+    // PU por unidad * cantidad
+    totalMat += matCD * qty;
+    totalMO  += (moCD + eqCD + extra) * qty;
   });
   const ivaAmt=subtotal*ivaRate, total=subtotal+ivaAmt;
   const fechaObj=new Date(fecha+'T12:00:00');
@@ -2397,30 +2396,34 @@ function renderPropuesta(){
   const vigFmt=vigDate.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
   const thClave = showClave ? `<th style="width:80px;color:#00d4ff">Clave</th>` : '';
   const thPU    = showPU    ? `<th class="right" style="width:100px;color:#00d4ff">P.U.</th>` : '';
-  const thMat   = `<th class="right" style="width:100px;color:#00d4ff">Materiales</th>`;
-  const thMO    = `<th class="right" style="width:110px;color:#00d4ff">Mano de Obra</th>`;
+  const thMat   = `<th class="right" style="width:100px;color:#00d4ff">P.U. Mat.</th>`;
+  const thMO    = `<th class="right" style="width:100px;color:#00d4ff">P.U. M.O.</th>`;
   let rows='';
   selected.forEach(apu=>{
-    const qty   = apu.cantidad||1;
-    const pu    = precioIva ? (apu.pu_total||0)*(1+ivaRate) : (apu.pu_total||0);
-    const imp   = pu*qty;
-    // Per-row material and MO breakdown
+    const qty    = apu.cantidad||1;
+    const pu     = precioIva ? (apu.pu_total||0)*(1+ivaRate) : (apu.pu_total||0);
+    // Per-unit breakdown (PU, not multiplied by qty)
     const rMatCD = apu.mat ? apu.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
     const rMoCD  = apu.mo  ? apu.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0;
     const rEqCD  = apu.eq  ? apu.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
     const rCD    = rMatCD + rMoCD + rEqCD;
     const rExtra = rCD * ((p.indirectos||15)/100 + (p.financiamiento||3)/100 + (p.utilidad||8)/100);
-    const rMatFinal = precioIva ? rMatCD*(1+ivaRate) : rMatCD;
-    const rMOFinal  = precioIva ? (rMoCD+rEqCD+rExtra)*(1+ivaRate) : (rMoCD+rEqCD+rExtra);
+    // PU por unidad (sin qty)
+    const puMat = precioIva ? rMatCD*(1+ivaRate) : rMatCD;
+    const puMO  = precioIva ? (rMoCD+rEqCD+rExtra)*(1+ivaRate) : (rMoCD+rEqCD+rExtra);
+    // Importe totalizado = (qty * puMat) + (qty * puMO) = qty * pu
+    const impMat = puMat * qty;
+    const impMO  = puMO  * qty;
+    const impTotal = impMat + impMO;
     rows += `<tr>
       ${showClave ? `<td class="clave">${apu.clave||'—'}</td>` : ''}
       <td>${apu.desc}</td>
       <td class="right">${apu.unidad}</td>
       <td class="right">${qty}</td>
       ${showPU ? `<td class="right">$${num(pu)}</td>` : ''}
-      <td class="right" style="color:#0070c0">$${num(rMatFinal*qty)}</td>
-      <td class="right" style="color:#00805a">$${num(rMOFinal*qty)}</td>
-      <td class="right" style="font-weight:700">$${num(imp)}</td>
+      <td class="right" style="color:#0070c0">$${num(puMat)}</td>
+      <td class="right" style="color:#00805a">$${num(puMO)}</td>
+      <td class="right" style="font-weight:700">$${num(impTotal)}</td>
     </tr>`;
   });
   let totalesHtml=`
@@ -2485,9 +2488,12 @@ function renderPropuesta(){
     <div class="prop-section">
       <div class="prop-section-title">Conceptos de trabajo</div>
       <table class="prop-table">
-        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cant.</th>${thPU}${thMat}${thMO}<th class="right" style="width:110px;color:#00d4ff">Importe</th></tr></thead>
+        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cant.</th>${thPU}${thMat}${thMO}<th class="right" style="width:120px;color:#00d4ff">Importe</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
+      <div style="font-size:10px;color:#8899bb;margin-top:6px;text-align:right;font-style:italic">
+        P.U. Mat. y P.U. M.O. = precio unitario por ${selected[0]?.unidad||'unidad'} · Importe = Cant. × (P.U. Mat. + P.U. M.O.)
+      </div>
       <div class="prop-totals"><div class="prop-totals-box">${totalesHtml}</div></div>
     </div>
     <div class="prop-section">
