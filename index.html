@@ -2409,7 +2409,7 @@ function renderPropuesta(){
   const thClave = showClave ? `<th style="width:80px;color:#00d4ff">Clave</th>` : '';
   const thPU    = showPU    ? `<th class="right" style="width:100px;color:#00d4ff">P.U.</th>` : '';
   const thMat   = `<th class="right" style="width:100px;color:#00d4ff">Materiales</th>`;
-  const thMO    = `<th class="right" style="width:110px;color:#00d4ff">M.O. + Ind.</th>`;
+  const thMO    = `<th class="right" style="width:110px;color:#00d4ff">Mano de Obra</th>`;
   let rows='';
   selected.forEach(apu=>{
     const qty   = apu.cantidad||1;
@@ -2443,7 +2443,7 @@ function renderPropuesta(){
       <span style="font-family:'Courier New',monospace;color:#0070c0">$${num(totalMat)}</span>
     </div>
     <div class="prop-total-row" style="font-size:12px">
-      <span style="color:#00805a;font-weight:600">● M.O. + Eq. + Ind. + Util.</span>
+      <span style="color:#00805a;font-weight:600">● Mano de Obra</span>
       <span style="font-family:'Courier New',monospace;color:#00805a">$${num(totalMO)}</span>
     </div>
     <div class="prop-total-row subtotal" style="margin-top:6px;font-size:13px;font-weight:600">
