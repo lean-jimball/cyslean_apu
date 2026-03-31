@@ -659,12 +659,13 @@ tr:hover td{background:rgba(0,212,255,0.03)}
       <div class="card">
         <div class="card-header"><div class="card-title">🏗 Datos del proyecto</div></div>
         <div class="card-body">
-          <div class="form-row cols4">
+          <div class="form-row cols2">
             <div class="form-group"><label>Nombre de la obra</label><input type="text" id="proj-nombre" placeholder="Instalación eléctrica industrial" oninput="saveProyecto();renderPropuesta()"></div>
-            <div class="form-group"><label>Empresa oferente</label><input type="text" id="proj-empresa" placeholder="Tu empresa" oninput="saveProyecto();renderPropuesta()"></div>
-            <div class="form-group"><label>Ubicación</label><input type="text" id="proj-ubicacion" placeholder="Ciudad, Estado" oninput="saveProyecto();renderPropuesta()"></div>
             <div class="form-group"><label>Fecha de inicio</label><input type="date" id="proj-fecha" oninput="saveProyecto()"></div>
           </div>
+          <!-- campos requeridos internamente por saveProyecto() -->
+          <input type="hidden" id="proj-empresa" value="">
+          <input type="hidden" id="proj-ubicacion" value="">
           <div class="form-row cols4">
             <div class="form-group"><label>Indirectos (%)</label><input type="number" id="proj-indirectos" value="15" min="0" max="50" oninput="saveProyecto()"></div>
             <div class="form-group"><label>Financiamiento (%)</label><input type="number" id="proj-financiamiento" value="3" min="0" max="20" oninput="saveProyecto()"></div>
@@ -728,10 +729,8 @@ tr:hover td{background:rgba(0,212,255,0.03)}
               <label>Elaboró</label>
               <input type="text" id="prop-elaboro" placeholder="Nombre y cargo" oninput="renderPropuesta()">
             </div>
-            <div class="form-group" style="margin-bottom:10px">
-              <label>Proyecto / Referencia</label>
-              <input type="text" id="prop-empresa-oferente" placeholder="Nombre del proyecto" oninput="renderPropuesta()">
-            </div>
+            <!-- hidden input requerido por renderPropuesta -->
+            <input type="hidden" id="prop-empresa-oferente" value="">
           </div>
         </div>
 
@@ -2368,7 +2367,7 @@ function renderPropuesta(){
   const contacto  = val('prop-contacto')||'';
   const oferente  = 'CySlean Consultoría y Soporte';
   const elaboro   = val('prop-elaboro')||'';
-  const proyRef   = val('prop-empresa-oferente')||(db.proyecto.nombre||'');
+  const proyRef   = db.proyecto.nombre||'';
   const condpago  = val('prop-condpago')||'50% anticipo, 50% contra entrega';
   const condsExtra = (val('prop-conds-extra')||'Incluye: suministro de materiales, mano de obra, herramienta y equipo necesarios para la correcta ejecución de los trabajos descritos\nNo incluye: trabajos de obra civil, permisos y derechos ante dependencias gubernamentales, salvo pacto en contrario\nLos precios están expresados en moneda nacional (MXN).')
     .split('\n').filter(l=>l.trim()).map(l=>`${l}<br>`).join('');
@@ -2383,32 +2382,79 @@ function renderPropuesta(){
     preview.innerHTML=`<div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">Selecciona al menos un concepto para generar la propuesta</div>`;
     return;
   }
-  let subtotal=0;
-  selected.forEach(a=>{ subtotal+=(a.pu_total||0)*(a.cantidad||1); });
+  let subtotal=0, totalMat=0, totalMO=0;
+  selected.forEach(a=>{
+    const qty = a.cantidad||1;
+    subtotal += (a.pu_total||0)*qty;
+    // Materiales = suma de insumos tipo mat con rendimiento
+    const matCD = a.mat ? a.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
+    totalMat += matCD * qty;
+    // "Mano de obra integral" = todo lo que NO es materiales (MO + EQ + indirectos + fin + utilidad)
+    const moCD  = a.mo  ? a.mo.reduce( (s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0;
+    const eqCD  = a.eq  ? a.eq.reduce( (s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
+    const cd    = matCD + moCD + eqCD;
+    const extra = cd * ((p.indirectos||15)/100 + (p.financiamiento||3)/100 + (p.utilidad||8)/100);
+    totalMO += (moCD + eqCD + extra) * qty;
+  });
   const ivaAmt=subtotal*ivaRate, total=subtotal+ivaAmt;
   const fechaObj=new Date(fecha+'T12:00:00');
   const fechaFmt=fechaObj.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
   const vigDate=new Date(fechaObj); vigDate.setDate(vigDate.getDate()+parseInt(vigencia));
   const vigFmt=vigDate.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
-  const thClave=showClave?`<th style="width:90px;color:#00d4ff">Clave</th>`:'';
-  const thPU=showPU?`<th class="right" style="width:110px;color:#00d4ff">P.U.</th>`:'';
+  const thClave = showClave ? `<th style="width:80px;color:#00d4ff">Clave</th>` : '';
+  const thPU    = showPU    ? `<th class="right" style="width:100px;color:#00d4ff">P.U.</th>` : '';
+  const thMat   = `<th class="right" style="width:100px;color:#00d4ff">Materiales</th>`;
+  const thMO    = `<th class="right" style="width:110px;color:#00d4ff">M.O. + Ind.</th>`;
   let rows='';
   selected.forEach(apu=>{
-    const qty=apu.cantidad||1;
-    const pu=precioIva?(apu.pu_total||0)*(1+ivaRate):(apu.pu_total||0);
-    const imp=pu*qty;
-    rows+=`<tr>
-      ${showClave?`<td class="clave">${apu.clave||'—'}</td>`:''}
+    const qty   = apu.cantidad||1;
+    const pu    = precioIva ? (apu.pu_total||0)*(1+ivaRate) : (apu.pu_total||0);
+    const imp   = pu*qty;
+    // Per-row material and MO breakdown
+    const rMatCD = apu.mat ? apu.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
+    const rMoCD  = apu.mo  ? apu.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0;
+    const rEqCD  = apu.eq  ? apu.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
+    const rCD    = rMatCD + rMoCD + rEqCD;
+    const rExtra = rCD * ((p.indirectos||15)/100 + (p.financiamiento||3)/100 + (p.utilidad||8)/100);
+    const rMatFinal = precioIva ? rMatCD*(1+ivaRate) : rMatCD;
+    const rMOFinal  = precioIva ? (rMoCD+rEqCD+rExtra)*(1+ivaRate) : (rMoCD+rEqCD+rExtra);
+    rows += `<tr>
+      ${showClave ? `<td class="clave">${apu.clave||'—'}</td>` : ''}
       <td>${apu.desc}</td>
       <td class="right">${apu.unidad}</td>
       <td class="right">${qty}</td>
-      ${showPU?`<td class="right">$${num(pu)}</td>`:''}
-      <td class="right" style="font-weight:600">$${num(imp)}</td>
+      ${showPU ? `<td class="right">$${num(pu)}</td>` : ''}
+      <td class="right" style="color:#0070c0">$${num(rMatFinal*qty)}</td>
+      <td class="right" style="color:#00805a">$${num(rMOFinal*qty)}</td>
+      <td class="right" style="font-weight:700">$${num(imp)}</td>
     </tr>`;
   });
-  let totalesHtml=`<div class="prop-total-row subtotal"><span>Subtotal</span><span style="font-family:'Courier New',monospace">$${num(subtotal)}</span></div>`;
-  if(showIva) totalesHtml+=`<div class="prop-total-row"><span>IVA (${p.iva||16}%)</span><span style="font-family:'Courier New',monospace">$${num(ivaAmt)}</span></div>`;
-  totalesHtml+=`<div class="prop-total-row grand"><span>TOTAL${showIva?' c/IVA':''}</span><span>$${num(showIva?total:subtotal)}</span></div>`;
+  let totalesHtml=`
+    <div class="prop-total-row" style="font-size:10px;color:#8899bb;padding-bottom:4px;border-bottom:2px solid #0a0e1a;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">
+      <span>Resumen del costo</span>
+    </div>
+    <div class="prop-total-row" style="font-size:12px">
+      <span style="color:#0070c0;font-weight:600">● Materiales</span>
+      <span style="font-family:'Courier New',monospace;color:#0070c0">$${num(totalMat)}</span>
+    </div>
+    <div class="prop-total-row" style="font-size:12px">
+      <span style="color:#00805a;font-weight:600">● M.O. + Eq. + Ind. + Util.</span>
+      <span style="font-family:'Courier New',monospace;color:#00805a">$${num(totalMO)}</span>
+    </div>
+    <div class="prop-total-row subtotal" style="margin-top:6px;font-size:13px;font-weight:600">
+      <span>Subtotal s/IVA</span>
+      <span style="font-family:'Courier New',monospace">$${num(subtotal)}</span>
+    </div>`;
+  if(showIva) totalesHtml+=`
+    <div class="prop-total-row" style="font-size:12px">
+      <span>IVA (${p.iva||16}%)</span>
+      <span style="font-family:'Courier New',monospace">$${num(ivaAmt)}</span>
+    </div>`;
+  totalesHtml+=`
+    <div class="prop-total-row grand">
+      <span>TOTAL${showIva?' c/IVA':''}</span>
+      <span>$${num(showIva?total:subtotal)}</span>
+    </div>`;
 
   preview.innerHTML=`
   <div class="prop-header">
@@ -2445,7 +2491,7 @@ function renderPropuesta(){
     <div class="prop-section">
       <div class="prop-section-title">Conceptos de trabajo</div>
       <table class="prop-table">
-        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:60px">Unidad</th><th class="right" style="width:70px">Cant.</th>${thPU}<th class="right" style="width:120px">Importe</th></tr></thead>
+        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cant.</th>${thPU}${thMat}${thMO}<th class="right" style="width:110px;color:#00d4ff">Importe</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <div class="prop-totals"><div class="prop-totals-box">${totalesHtml}</div></div>
