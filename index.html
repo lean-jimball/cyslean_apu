@@ -2460,7 +2460,7 @@ function renderPropuesta(){
   <div class="prop-header">
     <div>
       <div class="prop-logo-text">CySlean Consultoría y Soporte</div>
-      <div class="prop-logo-sub">Instalaciones Eléctricas · Propuesta Comercial</div>
+      <div class="prop-logo-sub">Propuesta Comercial</div>
     </div>
     <div class="prop-folio-box">
       <div class="prop-folio">FOLIO: ${folio}</div>
@@ -2483,7 +2483,6 @@ function renderPropuesta(){
         <div class="prop-section-title" style="color:#00b4d8">CySlean Consultoría y Soporte</div>
         <div class="prop-client-grid">
           ${elaboro?`<div class="prop-client-row"><div class="prop-client-label">Elaboró</div><div class="prop-client-val">${elaboro}</div></div>`:''}
-          ${proyRef?`<div class="prop-client-row"><div class="prop-client-label">Referencia</div><div class="prop-client-val">${proyRef}</div></div>`:''}
           <div class="prop-client-row"><div class="prop-client-label">Proyecto</div><div class="prop-client-val">${db.proyecto.nombre||'—'}</div></div>
         </div>
       </div>
