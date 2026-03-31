@@ -615,30 +615,34 @@ tr:hover td{background:rgba(0,212,255,0.03)}
   <div class="card">
     <div class="card-header">
       <div class="card-title">📋 Conceptos de obra — <span id="conc-proj-name">Sin proyecto</span></div>
-      <div style="font-size:12px;color:var(--text2)">Fecha: <span id="conc-fecha">—</span></div>
+      <div class="flex gap-8">
+        <span id="prop-badge" style="display:none;background:rgba(0,212,255,0.1);border:1px solid var(--accent);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-family:'IBM Plex Mono',monospace"></span>
+        <button class="btn btn-secondary btn-sm" onclick="openTab('propuesta')" title="Ir a propuesta con los seleccionados">📄 Ver propuesta</button>
+        <div style="font-size:12px;color:var(--text2)">Fecha: <span id="conc-fecha">—</span></div>
+      </div>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Clave</th><th>Descripción</th><th>Partida</th><th>Unidad</th><th class="number">P.U. CD</th><th class="number">P.U. Total</th><th class="number">Cantidad</th><th class="number">Importe</th><th class="no-print">Acciones</th></tr></thead>
+        <thead><tr><th class="no-print" style="width:36px"><input type="checkbox" id="conc-check-all" onchange="toggleAllPropuesta(this.checked)" style="accent-color:var(--accent);width:14px;height:14px" title="Seleccionar todos para propuesta"></th><th>Clave</th><th>Descripción</th><th>Partida</th><th>Unidad</th><th class="number">P.U. CD</th><th class="number">P.U. Total</th><th class="number">Cantidad</th><th class="number">Importe</th><th class="no-print">Acciones</th></tr></thead>
         <tbody id="concentrado-tbody"></tbody>
         <tfoot>
           <tr class="tr-total">
-            <td colspan="7" style="text-align:right;padding-right:16px">SUBTOTAL COSTO DIRECTO:</td>
+            <td colspan="8" style="text-align:right;padding-right:16px">SUBTOTAL COSTO DIRECTO:</td>
             <td class="number" id="conc-subtotal">$0.00</td>
             <td class="no-print"></td>
           </tr>
           <tr style="background:rgba(0,212,255,0.04)">
-            <td colspan="7" style="text-align:right;padding-right:16px;font-size:12px;color:var(--text2)">Indirectos + Financiamiento + Utilidad:</td>
+            <td colspan="8" style="text-align:right;padding-right:16px;font-size:12px;color:var(--text2)">Indirectos + Financiamiento + Utilidad:</td>
             <td class="number highlight" id="conc-ifu">$0.00</td>
             <td class="no-print"></td>
           </tr>
           <tr style="background:rgba(0,212,255,0.04)">
-            <td colspan="7" style="text-align:right;padding-right:16px;font-size:12px;color:var(--text2)">IVA (16%):</td>
+            <td colspan="8" style="text-align:right;padding-right:16px;font-size:12px;color:var(--text2)">IVA (16%):</td>
             <td class="number highlight" id="conc-iva">$0.00</td>
             <td class="no-print"></td>
           </tr>
           <tr class="tr-total" style="background:rgba(255,209,102,0.1)!important">
-            <td colspan="7" style="text-align:right;padding-right:16px;color:var(--gold);font-size:15px">TOTAL DE OBRA c/IVA:</td>
+            <td colspan="8" style="text-align:right;padding-right:16px;color:var(--gold);font-size:15px">TOTAL DE OBRA c/IVA:</td>
             <td class="number" style="color:var(--gold);font-size:15px" id="conc-total">$0.00</td>
             <td class="no-print"></td>
           </tr>
@@ -650,150 +654,97 @@ tr:hover td{background:rgba(0,212,255,0.03)}
 
 <!-- ======== PROPUESTA COMERCIAL ======== -->
 <div class="page" id="page-propuesta">
-  <div class="prop-controls no-print" style="display:grid;grid-template-columns:1fr 360px;gap:16px;margin-bottom:20px">
 
-    <!-- Configuración proyecto + propuesta -->
-    <div style="display:flex;flex-direction:column;gap:16px">
+  <!-- Config strip — compacto en la parte superior -->
+  <div class="prop-controls no-print" style="margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 
-      <!-- Datos del proyecto -->
+      <!-- Col 1: Proyecto + Folio/Vigencia -->
       <div class="card">
-        <div class="card-header"><div class="card-title">🏗 Datos del proyecto</div></div>
-        <div class="card-body">
-          <div class="form-row cols2">
-            <div class="form-group"><label>Nombre de la obra</label><input type="text" id="proj-nombre" placeholder="Instalación eléctrica industrial" oninput="saveProyecto();renderPropuesta()"></div>
-            <div class="form-group"><label>Fecha de inicio</label><input type="date" id="proj-fecha" oninput="saveProyecto()"></div>
+        <div class="card-header" style="padding:10px 16px">
+          <div class="card-title" style="font-size:12px">🏗 Proyecto</div>
+          <div class="flex gap-8">
+            <button class="btn btn-secondary btn-sm" onclick="generarFolio()">🔢 Folio</button>
+            <button class="btn btn-primary btn-sm" onclick="renderPropuesta()">🔄</button>
           </div>
-          <!-- campos requeridos internamente por saveProyecto() -->
+        </div>
+        <div class="card-body" style="padding:12px 16px">
+          <div class="form-row cols4" style="margin-bottom:10px">
+            <div class="form-group"><label>Nombre de la obra</label><input type="text" id="proj-nombre" placeholder="Instalación eléctrica industrial" oninput="saveProyecto();renderPropuesta()"></div>
+            <div class="form-group"><label>Folio</label><input type="text" id="prop-folio" placeholder="2024-0101-001" style="font-family:'IBM Plex Mono',monospace" oninput="renderPropuesta()"></div>
+            <div class="form-group"><label>Fecha propuesta</label><input type="date" id="prop-fecha" oninput="renderPropuesta()"></div>
+            <div class="form-group"><label>Vigencia (días)</label><input type="number" id="prop-vigencia" value="30" min="1" oninput="renderPropuesta()"></div>
+          </div>
+          <div class="form-row cols4">
+            <div class="form-group"><label>Indirectos %</label><input type="number" id="proj-indirectos" value="15" min="0" max="50" oninput="saveProyecto()"></div>
+            <div class="form-group"><label>Financiamiento %</label><input type="number" id="proj-financiamiento" value="3" min="0" max="20" oninput="saveProyecto()"></div>
+            <div class="form-group"><label>Utilidad %</label><input type="number" id="proj-utilidad" value="8" min="0" max="30" oninput="saveProyecto()"></div>
+            <div class="form-group"><label>IVA %</label><input type="number" id="proj-iva" value="16" min="0" max="20" oninput="saveProyecto()"></div>
+          </div>
+          <!-- hidden -->
           <input type="hidden" id="proj-empresa" value="">
           <input type="hidden" id="proj-ubicacion" value="">
-          <div class="form-row cols4">
-            <div class="form-group"><label>Indirectos (%)</label><input type="number" id="proj-indirectos" value="15" min="0" max="50" oninput="saveProyecto()"></div>
-            <div class="form-group"><label>Financiamiento (%)</label><input type="number" id="proj-financiamiento" value="3" min="0" max="20" oninput="saveProyecto()"></div>
-            <div class="form-group"><label>Utilidad (%)</label><input type="number" id="proj-utilidad" value="8" min="0" max="30" oninput="saveProyecto()"></div>
-            <div class="form-group"><label>IVA (%)</label><input type="number" id="proj-iva" value="16" min="0" max="20" oninput="saveProyecto()"></div>
-          </div>
+          <input type="hidden" id="proj-fecha" value="">
         </div>
       </div>
 
-      <!-- Datos de la propuesta -->
+      <!-- Col 2: Cliente + CySlean + Condiciones -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">⚙ Configuración de la propuesta</div>
-          <div class="flex gap-8">
-            <button class="btn btn-secondary btn-sm" onclick="generarFolio()">🔢 Nuevo folio</button>
-            <button class="btn btn-primary btn-sm" onclick="renderPropuesta()">🔄 Actualizar</button>
+        <div class="card-header" style="padding:10px 16px">
+          <div class="card-title" style="font-size:12px">👤 Cliente &amp; Condiciones</div>
+          <div class="flex gap-8" style="font-size:11px;color:var(--text2)">
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="prop-show-clave" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Clave</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="prop-show-pu" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> P.U.</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="prop-show-iva" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> IVA</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="prop-precio-iva" onchange="renderPropuesta()" style="accent-color:var(--accent)"> c/IVA</label>
           </div>
         </div>
-      <div class="card-body">
-        <div class="form-row cols3">
-          <div class="form-group">
-            <label>Folio</label>
-            <input type="text" id="prop-folio" placeholder="2024-0101-001" style="font-family:'IBM Plex Mono',monospace" oninput="renderPropuesta()">
+        <div class="card-body" style="padding:12px 16px">
+          <div class="form-row cols4" style="margin-bottom:10px">
+            <div class="form-group" style="grid-column:span 2"><label>Cliente / Empresa</label><input type="text" id="prop-cliente" placeholder="Empresa del cliente" oninput="renderPropuesta()"></div>
+            <div class="form-group"><label>Atención a</label><input type="text" id="prop-atencion" placeholder="Contacto" oninput="renderPropuesta()"></div>
+            <div class="form-group"><label>Elaboró (CySlean)</label><input type="text" id="prop-elaboro" placeholder="Nombre y cargo" oninput="renderPropuesta()"></div>
           </div>
-          <div class="form-group">
-            <label>Fecha</label>
-            <input type="date" id="prop-fecha" oninput="renderPropuesta()">
+          <div class="form-row cols3">
+            <div class="form-group"><label>Dirección / Obra</label><input type="text" id="prop-direccion" placeholder="Ubicación" oninput="renderPropuesta()"></div>
+            <div class="form-group"><label>Contacto cliente</label><input type="text" id="prop-contacto" placeholder="tel / email" oninput="renderPropuesta()"></div>
+            <div class="form-group"><label>Forma de pago</label><input type="text" id="prop-condpago" value="50% anticipo, 50% contra entrega" oninput="renderPropuesta()"></div>
           </div>
-          <div class="form-group">
-            <label>Vigencia (días)</label>
-            <input type="number" id="prop-vigencia" value="30" min="1" oninput="renderPropuesta()">
-          </div>
-        </div>
-
-        <!-- Dos columnas: Cliente izquierda / CySlean derecha -->
-        <div class="form-row" style="grid-template-columns:1fr 1fr;display:grid;gap:16px">
-          <!-- Cliente -->
-          <div>
-            <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">Cliente</div>
-            <div class="form-group" style="margin-bottom:10px">
-              <label>Empresa / Razón social</label>
-              <input type="text" id="prop-cliente" placeholder="Empresa del cliente" oninput="renderPropuesta()">
-            </div>
-            <div class="form-group" style="margin-bottom:10px">
-              <label>Atención a</label>
-              <input type="text" id="prop-atencion" placeholder="Nombre del contacto" oninput="renderPropuesta()">
-            </div>
-            <div class="form-group" style="margin-bottom:10px">
-              <label>Dirección / Obra</label>
-              <input type="text" id="prop-direccion" placeholder="Ubicación de la obra" oninput="renderPropuesta()">
-            </div>
-            <div class="form-group">
-              <label>Teléfono / Email</label>
-              <input type="text" id="prop-contacto" placeholder="tel / email" oninput="renderPropuesta()">
-            </div>
-          </div>
-          <!-- CySlean -->
-          <div>
-            <div style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">CySlean Consultoría y Soporte</div>
-            <div class="form-group" style="margin-bottom:10px">
-              <label>Elaboró</label>
-              <input type="text" id="prop-elaboro" placeholder="Nombre y cargo" oninput="renderPropuesta()">
-            </div>
-            <!-- hidden input requerido por renderPropuesta -->
-            <input type="hidden" id="prop-empresa-oferente" value="">
-            <div class="form-group" style="margin-top:8px">
-              <label>Teléfono / Email CySlean</label>
-              <input type="text" id="prop-cyslean-contacto" placeholder="tel / email" value="cyslean@gmail.com" oninput="renderPropuesta()">
-            </div>
-          </div>
-        </div>
-
-        <!-- Condiciones editables -->
-        <div style="margin-top:12px">
-          <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">Condiciones (editables)</div>
-          <div class="form-row cols2" style="margin-bottom:8px">
-            <div class="form-group">
-              <label>Forma de pago</label>
-              <input type="text" id="prop-condpago" value="50% anticipo, 50% contra entrega" oninput="renderPropuesta()">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Condiciones adicionales</label>
-            <textarea id="prop-conds-extra" rows="3" oninput="renderPropuesta()"
-              style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:5px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;resize:vertical;transition:border-color .2s"
-              placeholder="Incluye: suministro de materiales, mano de obra, herramienta y equipo&#10;No incluye: obra civil, permisos y derechos ante dependencias&#10;Los precios son en MXN."
-              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor=''"
-            ></textarea>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:12px;margin-top:10px;font-size:12px;flex-wrap:wrap">
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-clave" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Mostrar clave</label>
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-pu" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Mostrar P.U.</label>
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-iva" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Desglosar IVA</label>
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-precio-iva" onchange="renderPropuesta()" style="accent-color:var(--accent)"> Precio c/IVA en tabla</label>
+          <input type="hidden" id="prop-empresa-oferente" value="">
+          <input type="hidden" id="prop-cyslean-contacto" value="proyectos.leninjb@gmail.com">
         </div>
       </div>
-    </div><!-- end flex column -->
     </div>
 
-    <!-- Selector de conceptos -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">✅ Seleccionar conceptos</div>
-        <div class="flex gap-8">
-          <button class="btn btn-secondary btn-sm" onclick="toggleAllConceptos(true)">Todo</button>
-          <button class="btn btn-secondary btn-sm" onclick="toggleAllConceptos(false)">Ninguno</button>
-        </div>
+    <!-- Condiciones extra colapsable -->
+    <details style="margin-top:10px">
+      <summary style="cursor:pointer;font-size:12px;color:var(--text2);padding:6px 0;user-select:none">⚙ Condiciones adicionales (clic para expandir)</summary>
+      <div style="margin-top:8px">
+        <textarea id="prop-conds-extra" rows="3" oninput="renderPropuesta()"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:5px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;resize:vertical"
+          placeholder="Incluye: suministro de materiales, mano de obra, herramienta y equipo&#10;No incluye: obra civil, permisos y derechos ante dependencias&#10;Los precios son en MXN."
+        ></textarea>
       </div>
-      <div id="prop-concepto-list" style="max-height:340px;overflow-y:auto"></div>
-    </div>
+    </details>
   </div>
 
-  <!-- Botones de exportar -->
-  <div class="flex-between no-print" style="margin-bottom:16px">
-    <div style="font-size:12px;color:var(--text2)">Vista previa de la propuesta — edita los campos arriba para actualizar</div>
+  <!-- Acciones -->
+  <div class="flex-between no-print" style="margin-bottom:12px">
+    <div style="font-size:12px;color:var(--text2)">
+      Vista previa · <span id="prop-selected-count" style="color:var(--accent)">0 conceptos</span> seleccionados desde el Concentrado
+    </div>
     <div class="flex gap-8">
+      <button class="btn btn-secondary" onclick="openTab('concentrado')">← Seleccionar conceptos</button>
       <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimir / PDF</button>
       <button class="btn btn-primary" onclick="exportPropuestaPDF()">📄 Exportar PDF</button>
     </div>
   </div>
 
-  <!-- Vista previa -->
+  <!-- Vista previa — ancho completo -->
   <div id="prop-preview-wrapper">
     <div class="prop-preview" id="prop-preview">
       <div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">
-        Selecciona conceptos y llena los datos para generar la propuesta
+        Selecciona conceptos en el <strong>Concentrado</strong> usando los checkboxes ☑ y regresa aquí para ver la propuesta
       </div>
     </div>
   </div>
@@ -1656,12 +1607,18 @@ function renderConcentrado(){
   setText('conc-fecha', p.fecha||'—');
   const factor=(1+(p.indirectos||15)/100)*(1+(p.financiamiento||3)/100)*(1+(p.utilidad||8)/100);
   const tbody = document.getElementById('concentrado-tbody');
-  if(!db.apus.length){ tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="icon">📋</div><p>Sin APUs registrados</p></div></td></tr>`; updateConcentradoTotals(0); return; }
+  if(!db.apus.length){ tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="icon">📋</div><p>Sin APUs registrados</p></div></td></tr>`; updateConcentradoTotals(0); return; }
   let subtotalCD = 0;
   tbody.innerHTML = db.apus.map((apu,i)=>{
     const importe = (apu.pu_total||0)*(apu.cantidad||0);
     subtotalCD += apu.pu_cd*(apu.cantidad||0);
+    const checked = propSelectedIds.has(apu.id) ? 'checked' : '';
     return `<tr>
+      <td class="no-print" style="text-align:center;padding:0 8px">
+        <input type="checkbox" ${checked} onchange="toggleConceptoPropuesta('${apu.id}',this.checked)"
+          style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer"
+          title="Incluir en propuesta comercial">
+      </td>
       <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${apu.clave||'—'}</td>
       <td style="font-size:12px">${apu.desc}</td>
       <td><span class="tag" style="background:rgba(255,209,102,0.1);color:var(--gold);font-size:10px">${apu.partida||'—'}</span></td>
@@ -1677,6 +1634,11 @@ function renderConcentrado(){
     </tr>`;
   }).join('');
   updateConcentradoTotals(subtotalCD);
+  // Update select-all checkbox state
+  const chkAll = document.getElementById('conc-check-all');
+  if(chkAll) chkAll.checked = db.apus.length > 0 && db.apus.every(a=>propSelectedIds.has(a.id));
+  // Update propuesta badge
+  updatePropuestaBadge();
 }
 
 function updateConcentradoTotals(cd){
@@ -1691,7 +1653,33 @@ function updateConcentradoTotals(cd){
   setText('conc-total','$'+num(total));
 }
 
-function updateCantidad(i,v){ db.apus[i].cantidad=+v||0; saveToStorage(); renderConcentrado(); updateDashboard(); }
+function toggleConceptoPropuesta(id, checked){
+  if(checked) propSelectedIds.add(id);
+  else propSelectedIds.delete(id);
+  updatePropuestaBadge();
+  // Keep select-all in sync
+  const chkAll = document.getElementById('conc-check-all');
+  if(chkAll) chkAll.checked = db.apus.length>0 && db.apus.every(a=>propSelectedIds.has(a.id));
+}
+
+function toggleAllPropuesta(checked){
+  db.apus.forEach(a => checked ? propSelectedIds.add(a.id) : propSelectedIds.delete(a.id));
+  renderConcentrado();
+}
+
+function updatePropuestaBadge(){
+  const badge = document.getElementById('prop-badge');
+  if(!badge) return;
+  const count = db.apus.filter(a=>propSelectedIds.has(a.id)).length;
+  if(count > 0){
+    badge.style.display = '';
+    badge.textContent = `📄 ${count} en propuesta`;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+
 function editAPU(idx){ const apu=db.apus[idx]; setValue('apu-clave',apu.clave); setValue('apu-desc',apu.desc); setValue('apu-unidad',apu.unidad); setValue('apu-partida',apu.partida); setValue('apu-rendimiento',apu.rendimiento); setValue('apu-factor',apu.factor); currentAPU={...apu}; renderInsumos(); calcularAPU(); openTab('apu'); }
 function deleteAPU(idx){ if(confirm('¿Eliminar este APU del presupuesto?')){ db.apus.splice(idx,1); saveToStorage(); renderConcentrado(); updateDashboard(); } }
 
@@ -2291,12 +2279,12 @@ let propSelectedIds = new Set();
 
 function initPropuesta(){
   const hoyStr = new Date().toISOString().slice(0,10);
-  setValue('prop-fecha', hoyStr);
+  const propFecha = document.getElementById('prop-fecha');
+  if(propFecha && !propFecha.value) propFecha.value = hoyStr;
   const p = db.proyecto;
-  if(p.empresa) setValue('prop-empresa-oferente', p.empresa);
-  if(p.ubicacion) setValue('prop-direccion', p.ubicacion);
+  if(p.nombre && document.getElementById('proj-nombre')) setValue('proj-nombre', p.nombre);
   if(!val('prop-folio')) generarFolio();
-  renderConceptoSelector();
+  updatePropuestaBadge();
   renderPropuesta();
 }
 
@@ -2383,6 +2371,9 @@ function renderPropuesta(){
   const p = db.proyecto;
   const ivaRate = (p.iva||16)/100;
   const selected = db.apus.filter(a => propSelectedIds.has(a.id));
+  // Update count label
+  const countEl = document.getElementById('prop-selected-count');
+  if(countEl) countEl.textContent = selected.length + ' conceptos';
   if(!selected.length){
     preview.innerHTML=`<div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">Selecciona al menos un concepto para generar la propuesta</div>`;
     return;
