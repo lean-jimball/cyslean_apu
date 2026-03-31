@@ -698,43 +698,63 @@ tr:hover td{background:rgba(0,212,255,0.03)}
             <input type="number" id="prop-vigencia" value="30" min="1" oninput="renderPropuesta()">
           </div>
         </div>
-        <div class="form-row cols2">
-          <div class="form-group">
-            <label>Cliente / Empresa</label>
-            <input type="text" id="prop-cliente" placeholder="Empresa del cliente" oninput="renderPropuesta()">
+
+        <!-- Dos columnas: Cliente izquierda / CySlean derecha -->
+        <div class="form-row" style="grid-template-columns:1fr 1fr;display:grid;gap:16px">
+          <!-- Cliente -->
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">Cliente</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label>Empresa / Razón social</label>
+              <input type="text" id="prop-cliente" placeholder="Empresa del cliente" oninput="renderPropuesta()">
+            </div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label>Atención a</label>
+              <input type="text" id="prop-atencion" placeholder="Nombre del contacto" oninput="renderPropuesta()">
+            </div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label>Dirección / Obra</label>
+              <input type="text" id="prop-direccion" placeholder="Ubicación de la obra" oninput="renderPropuesta()">
+            </div>
+            <div class="form-group">
+              <label>Teléfono / Email</label>
+              <input type="text" id="prop-contacto" placeholder="tel / email" oninput="renderPropuesta()">
+            </div>
           </div>
-          <div class="form-group">
-            <label>Atención a</label>
-            <input type="text" id="prop-atencion" placeholder="Nombre del contacto" oninput="renderPropuesta()">
+          <!-- CySlean -->
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">CySlean Consultoría y Soporte</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label>Elaboró</label>
+              <input type="text" id="prop-elaboro" placeholder="Nombre y cargo" oninput="renderPropuesta()">
+            </div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label>Proyecto / Referencia</label>
+              <input type="text" id="prop-empresa-oferente" placeholder="Nombre del proyecto" oninput="renderPropuesta()">
+            </div>
           </div>
         </div>
-        <div class="form-row cols2">
-          <div class="form-group">
-            <label>Dirección / Obra</label>
-            <input type="text" id="prop-direccion" placeholder="Ubicación de la obra" oninput="renderPropuesta()">
+
+        <!-- Condiciones editables -->
+        <div style="margin-top:12px">
+          <div style="font-size:10px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">Condiciones (editables)</div>
+          <div class="form-row cols2" style="margin-bottom:8px">
+            <div class="form-group">
+              <label>Forma de pago</label>
+              <input type="text" id="prop-condpago" value="50% anticipo, 50% contra entrega" oninput="renderPropuesta()">
+            </div>
           </div>
           <div class="form-group">
-            <label>Teléfono / Email cliente</label>
-            <input type="text" id="prop-contacto" placeholder="tel / email" oninput="renderPropuesta()">
-          </div>
-        </div>
-        <div class="form-row cols2">
-          <div class="form-group">
-            <label>Empresa oferente</label>
-            <input type="text" id="prop-empresa-oferente" placeholder="Tu empresa" oninput="renderPropuesta()">
-          </div>
-          <div class="form-group">
-            <label>Elaboró</label>
-            <input type="text" id="prop-elaboro" placeholder="Nombre y cargo" oninput="renderPropuesta()">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Condiciones de pago</label>
-            <input type="text" id="prop-condpago" value="50% anticipo, 50% contra entrega" oninput="renderPropuesta()">
+            <label>Condiciones adicionales</label>
+            <textarea id="prop-conds-extra" rows="3" oninput="renderPropuesta()"
+              style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:5px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;resize:vertical;transition:border-color .2s"
+              placeholder="Incluye: suministro de materiales, mano de obra, herramienta y equipo&#10;No incluye: obra civil, permisos y derechos ante dependencias&#10;Los precios son en MXN."
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor=''"
+            ></textarea>
           </div>
         </div>
-        <div style="display:flex;gap:12px;margin-top:4px;font-size:12px;flex-wrap:wrap">
+
+        <div style="display:flex;gap:12px;margin-top:10px;font-size:12px;flex-wrap:wrap">
           <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-clave" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Mostrar clave</label>
           <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-pu" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Mostrar P.U.</label>
           <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="prop-show-iva" checked onchange="renderPropuesta()" style="accent-color:var(--accent)"> Desglosar IVA</label>
@@ -2346,9 +2366,12 @@ function renderPropuesta(){
   const atencion  = val('prop-atencion')||'';
   const direccion = val('prop-direccion')||'';
   const contacto  = val('prop-contacto')||'';
-  const oferente  = val('prop-empresa-oferente')||(db.proyecto.empresa||'CySlean APU');
+  const oferente  = 'CySlean Consultoría y Soporte';
   const elaboro   = val('prop-elaboro')||'';
+  const proyRef   = val('prop-empresa-oferente')||(db.proyecto.nombre||'');
   const condpago  = val('prop-condpago')||'50% anticipo, 50% contra entrega';
+  const condsExtra = (val('prop-conds-extra')||'Incluye: suministro de materiales, mano de obra, herramienta y equipo necesarios para la correcta ejecución de los trabajos descritos\nNo incluye: trabajos de obra civil, permisos y derechos ante dependencias gubernamentales, salvo pacto en contrario\nLos precios están expresados en moneda nacional (MXN).')
+    .split('\n').filter(l=>l.trim()).map(l=>`${l}<br>`).join('');
   const showClave = document.getElementById('prop-show-clave')?.checked;
   const showPU    = document.getElementById('prop-show-pu')?.checked;
   const showIva   = document.getElementById('prop-show-iva')?.checked;
@@ -2390,7 +2413,7 @@ function renderPropuesta(){
   preview.innerHTML=`
   <div class="prop-header">
     <div>
-      <div class="prop-logo-text">${oferente}</div>
+      <div class="prop-logo-text">CySlean Consultoría y Soporte</div>
       <div class="prop-logo-sub">Instalaciones Eléctricas · Propuesta Comercial</div>
     </div>
     <div class="prop-folio-box">
@@ -2411,10 +2434,10 @@ function renderPropuesta(){
         </div>
       </div>
       <div class="prop-section">
-        <div class="prop-section-title">Oferente</div>
+        <div class="prop-section-title" style="color:#00b4d8">CySlean Consultoría y Soporte</div>
         <div class="prop-client-grid">
-          <div class="prop-client-row"><div class="prop-client-label">Empresa</div><div class="prop-client-val">${oferente}</div></div>
           ${elaboro?`<div class="prop-client-row"><div class="prop-client-label">Elaboró</div><div class="prop-client-val">${elaboro}</div></div>`:''}
+          ${proyRef?`<div class="prop-client-row"><div class="prop-client-label">Referencia</div><div class="prop-client-val">${proyRef}</div></div>`:''}
           <div class="prop-client-row"><div class="prop-client-label">Proyecto</div><div class="prop-client-val">${db.proyecto.nombre||'—'}</div></div>
         </div>
       </div>
@@ -2432,14 +2455,13 @@ function renderPropuesta(){
       <div class="prop-conds">
         <strong>Forma de pago:</strong> ${condpago}<br>
         <strong>Vigencia:</strong> ${vigencia} días a partir de la fecha de emisión (${vigFmt})<br>
-        <strong>Incluye:</strong> Suministro de materiales, mano de obra, herramienta y equipo necesarios para la correcta ejecución de los trabajos descritos<br>
-        <strong>No incluye:</strong> Trabajos de obra civil, permisos y derechos ante dependencias, salvo pacto en contrario<br>
-        <strong>Precios:</strong> Expresados en moneda nacional (MXN). ${showIva?'IVA incluido en el total.':'IVA no incluido, se desglosará en factura.'}
+        ${condsExtra}
+        <strong>Precios:</strong> ${showIva?'IVA incluido en el total.':'IVA no incluido, se desglosará en factura.'}
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:32px;padding-top:20px;border-top:1px solid #e8edf5">
       <div style="text-align:center">
-        <div style="border-top:1px solid #1a1a1a;margin-top:50px;padding-top:8px;font-size:11px;color:#4a5568">${oferente}</div>
+        <div style="border-top:1px solid #1a1a1a;margin-top:50px;padding-top:8px;font-size:11px;color:#4a5568">CySlean Consultoría y Soporte</div>
         <div style="font-size:10px;color:#8899bb">${elaboro||'Firma del oferente'}</div>
       </div>
       <div style="text-align:center">
@@ -2449,7 +2471,7 @@ function renderPropuesta(){
     </div>
   </div>
   <div class="prop-footer">
-    <span>${oferente} · Propuesta Comercial · ${fechaFmt}</span>
+    <span>CySlean Consultoría y Soporte · Propuesta Comercial · ${fechaFmt}</span>
     <div class="prop-stamp">${folio}</div>
   </div>`;
 }
