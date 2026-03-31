@@ -731,6 +731,10 @@ tr:hover td{background:rgba(0,212,255,0.03)}
             </div>
             <!-- hidden input requerido por renderPropuesta -->
             <input type="hidden" id="prop-empresa-oferente" value="">
+            <div class="form-group" style="margin-top:8px">
+              <label>Teléfono / Email CySlean</label>
+              <input type="text" id="prop-cyslean-contacto" placeholder="tel / email" value="cyslean@gmail.com" oninput="renderPropuesta()">
+            </div>
           </div>
         </div>
 
@@ -2368,6 +2372,7 @@ function renderPropuesta(){
   const oferente  = 'CySlean Consultoría y Soporte';
   const elaboro   = val('prop-elaboro')||'';
   const proyRef   = db.proyecto.nombre||'';
+  const cysleanContacto = val('prop-cyslean-contacto')||'cyslean@gmail.com';
   const condpago  = val('prop-condpago')||'50% anticipo, 50% contra entrega';
   const condsExtra = (val('prop-conds-extra')||'Incluye: suministro de materiales, mano de obra, herramienta y equipo necesarios para la correcta ejecución de los trabajos descritos\nNo incluye: trabajos de obra civil, permisos y derechos ante dependencias gubernamentales, salvo pacto en contrario\nLos precios están expresados en moneda nacional (MXN).')
     .split('\n').filter(l=>l.trim()).map(l=>`${l}<br>`).join('');
@@ -2482,8 +2487,9 @@ function renderPropuesta(){
       <div class="prop-section">
         <div class="prop-section-title" style="color:#00b4d8">CySlean Consultoría y Soporte</div>
         <div class="prop-client-grid">
-          ${elaboro?`<div class="prop-client-row"><div class="prop-client-label">Elaboró</div><div class="prop-client-val">${elaboro}</div></div>`:''}
           <div class="prop-client-row"><div class="prop-client-label">Proyecto</div><div class="prop-client-val">${db.proyecto.nombre||'—'}</div></div>
+          ${elaboro?`<div class="prop-client-row"><div class="prop-client-label">Elaboró</div><div class="prop-client-val">${elaboro}</div></div>`:''}
+          <div class="prop-client-row"><div class="prop-client-label">Contacto</div><div class="prop-client-val">${cysleanContacto}</div></div>
         </div>
       </div>
     </div>
