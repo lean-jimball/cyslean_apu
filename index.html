@@ -726,6 +726,55 @@ tr:hover td{background:rgba(0,212,255,0.03)}
       </div>
     </div>
   </div>
+
+  <!-- Análisis interno — no se imprime -->
+  <div class="no-print" id="prop-analisis-interno" style="margin-top:20px;display:none">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="color:var(--gold)">🔒 Análisis interno de costos — <span style="color:var(--text3);font-size:11px;font-weight:400">Este panel NO se incluye en la propuesta al cliente</span></div>
+      </div>
+      <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <!-- Resumen numérico -->
+        <div>
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent)">● Materiales</span><span class="highlight" id="int-mat">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent3)">● Mano de Obra</span><span class="highlight" id="int-mo">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent2)">● Equipo/Herr.</span><span class="highlight" id="int-eq">$0.00</span></div>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span style="color:var(--text2)">Costo Directo</span><span class="highlight" id="int-cd">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Indirectos <small id="int-ind-pct">15%</small></span><span class="highlight" id="int-ind">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Financiamiento <small id="int-fin-pct">3%</small></span><span class="highlight" id="int-fin">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Utilidad <small id="int-ut-pct">8%</small></span><span class="highlight" id="int-ut">$0.00</span></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:6px;font-weight:600"><span>Precio de Venta s/IVA</span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:16px" id="int-pu">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">IVA <small id="int-iva-pct">16%</small></span><span class="highlight" id="int-iva">$0.00</span></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700"><span style="color:var(--gold)">TOTAL c/IVA</span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace" id="int-total">$0.00</span></div>
+        </div>
+        <!-- Composición gráfica -->
+        <div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;font-weight:600">COMPOSICIÓN DEL COSTO DIRECTO</div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:12px;color:var(--accent)">Materiales</span><span id="int-pct-mat" style="font-size:12px">0%</span></div>
+            <div class="progress-bar" style="height:10px"><div class="progress-fill" id="int-bar-mat" style="width:0%;background:var(--accent)"></div></div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:12px;color:var(--accent3)">Mano de Obra</span><span id="int-pct-mo" style="font-size:12px">0%</span></div>
+            <div class="progress-bar" style="height:10px"><div class="progress-fill" id="int-bar-mo" style="width:0%;background:var(--accent3)"></div></div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:12px;color:var(--accent2)">Equipo/Herr.</span><span id="int-pct-eq" style="font-size:12px">0%</span></div>
+            <div class="progress-bar" style="height:10px"><div class="progress-fill" id="int-bar-eq" style="width:0%;background:var(--accent2)"></div></div>
+          </div>
+          <div class="divider" style="margin:16px 0"></div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:8px;font-family:'IBM Plex Mono',monospace;font-weight:600">MARGEN SOBRE COSTO DIRECTO</div>
+          <div style="font-size:28px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--gold)" id="int-margen">0%</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">Ind. + Fin. + Utilidad sobre CD</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ======== BASE DE DATOS ======== -->
@@ -2170,7 +2219,9 @@ function saveGClientId(){}
 
 
 
-// JSON backup
+// ============================================================
+// HELPERS
+// ============================================================
 function exportData(){
   const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
@@ -2427,18 +2478,7 @@ function renderPropuesta(){
     </tr>`;
   });
   let totalesHtml=`
-    <div class="prop-total-row" style="font-size:10px;color:#8899bb;padding-bottom:4px;border-bottom:2px solid #0a0e1a;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">
-      <span>Resumen del costo</span>
-    </div>
-    <div class="prop-total-row" style="font-size:12px">
-      <span style="color:#0070c0;font-weight:600">● Materiales</span>
-      <span style="font-family:'Courier New',monospace;color:#0070c0">$${num(totalMat)}</span>
-    </div>
-    <div class="prop-total-row" style="font-size:12px">
-      <span style="color:#00805a;font-weight:600">● Mano de Obra</span>
-      <span style="font-family:'Courier New',monospace;color:#00805a">$${num(totalMO)}</span>
-    </div>
-    <div class="prop-total-row subtotal" style="margin-top:6px;font-size:13px;font-weight:600">
+    <div class="prop-total-row subtotal" style="font-size:13px;font-weight:600">
       <span>Subtotal s/IVA</span>
       <span style="font-family:'Courier New',monospace">$${num(subtotal)}</span>
     </div>`;
@@ -2491,9 +2531,6 @@ function renderPropuesta(){
         <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cant.</th>${thPU}${thMat}${thMO}<th class="right" style="width:120px;color:#00d4ff">Importe</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div style="font-size:10px;color:#8899bb;margin-top:6px;text-align:right;font-style:italic">
-        P.U. Mat. y P.U. M.O. = precio unitario por ${selected[0]?.unidad||'unidad'} · Importe = Cant. × (P.U. Mat. + P.U. M.O.)
-      </div>
       <div class="prop-totals"><div class="prop-totals-box">${totalesHtml}</div></div>
     </div>
     <div class="prop-section">
@@ -2535,11 +2572,46 @@ function exportPropuestaPDF(){
   }
   window.print();
   notify(`Propuesta ${folio} — guarda como PDF desde el diálogo de impresión`);
-}
+  // ── Análisis interno ──────────────────────────────────
+  const analisisEl = document.getElementById('prop-analisis-interno');
+  if(analisisEl && selected.length){
+    analisisEl.style.display = '';
+    // Compute raw CD breakdown (without IFU)
+    let intMat=0, intMO=0, intEQ=0;
+    selected.forEach(a=>{
+      const qty = a.cantidad||1;
+      intMat += (a.mat ? a.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0) * qty;
+      intMO  += (a.mo  ? a.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0) * qty;
+      intEQ  += (a.eq  ? a.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0) * qty;
+    });
+    const intCD  = intMat + intMO + intEQ;
+    const intInd = intCD * (p.indirectos||15)/100;
+    const intFin = intCD * (p.financiamiento||3)/100;
+    const intUt  = intCD * (p.utilidad||8)/100;
+    const intPU  = intCD + intInd + intFin + intUt;
+    const intIva = intPU * ivaRate;
+    const intTot = intPU + intIva;
+    const margen = intCD ? Math.round((intInd+intFin+intUt)/intCD*100) : 0;
+    const pctM = intCD ? Math.round(intMat/intCD*100) : 0;
+    const pctO = intCD ? Math.round(intMO/intCD*100)  : 0;
+    const pctE = intCD ? Math.round(intEQ/intCD*100)  : 0;
 
-// ============================================================
-// HELPERS
-// ============================================================
+    setText('int-mat', '$'+num(intMat)); setText('int-mo', '$'+num(intMO)); setText('int-eq', '$'+num(intEQ));
+    setText('int-cd', '$'+num(intCD));  setText('int-ind', '$'+num(intInd)); setText('int-fin', '$'+num(intFin));
+    setText('int-ut', '$'+num(intUt));  setText('int-pu', '$'+num(intPU));
+    setText('int-iva', '$'+num(intIva)); setText('int-total', '$'+num(intTot));
+    setText('int-margen', margen+'%');
+    setText('int-ind-pct', (p.indirectos||15)+'%');
+    setText('int-fin-pct', (p.financiamiento||3)+'%');
+    setText('int-ut-pct',  (p.utilidad||8)+'%');
+    setText('int-iva-pct', (p.iva||16)+'%');
+    setText('int-pct-mat', pctM+'%'); setStyle('int-bar-mat','width',pctM+'%');
+    setText('int-pct-mo',  pctO+'%'); setStyle('int-bar-mo', 'width',pctO+'%');
+    setText('int-pct-eq',  pctE+'%'); setStyle('int-bar-eq', 'width',pctE+'%');
+  } else if(analisisEl){
+    analisisEl.style.display = 'none';
+  }
+}
 function num(v){ return (+v||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function numK(v){ if(v>=1000000) return (v/1000000).toFixed(2)+'M'; if(v>=1000) return (v/1000).toFixed(1)+'K'; return num(v); }
 function setText(id,t){ const el=document.getElementById(id); if(el) el.textContent=t; }
