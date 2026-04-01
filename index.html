@@ -13,7 +13,7 @@
   --surface: #111827;
   --surface2: #1a2235;
   --surface3: #1f2d42;
-  --accent: #00d4ff;
+  --accent: #ffd166;
   --accent2: #ff6b00;
   --accent3: #00ff9d;
   --danger: #ff3b5c;
@@ -229,10 +229,10 @@ tr:hover td{background:rgba(0,212,255,0.03)}
 /* PROPUESTA COMERCIAL */
 .prop-preview{background:#fff;color:#1a1a1a;border-radius:8px;box-shadow:0 4px 32px rgba(0,0,0,.4);max-width:860px;margin:0 auto;font-family:'Arial',sans-serif}
 .prop-header{background:linear-gradient(135deg,#0a0e1a 0%,#1a2235 100%);padding:28px 36px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:flex-start}
-.prop-logo-text{font-size:26px;font-weight:700;color:#00d4ff;letter-spacing:2px}
+.prop-logo-text{font-size:26px;font-weight:700;color:#ffd166;letter-spacing:2px}
 .prop-logo-sub{font-size:10px;color:#8899bb;letter-spacing:1px;margin-top:2px}
 .prop-folio-box{text-align:right}
-.prop-folio{font-family:'Courier New',monospace;font-size:13px;color:#00d4ff;font-weight:700}
+.prop-folio{font-family:'Courier New',monospace;font-size:13px;color:#ffd166;font-weight:700}
 .prop-fecha{font-size:11px;color:#8899bb;margin-top:4px}
 .prop-body{padding:28px 36px}
 .prop-section{margin-bottom:22px}
@@ -242,7 +242,7 @@ tr:hover td{background:rgba(0,212,255,0.03)}
 .prop-client-label{color:#8899bb;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
 .prop-client-val{color:#1a1a1a;font-weight:600;margin-top:1px}
 .prop-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
-.prop-table th{background:#0a0e1a;color:#00d4ff;padding:8px 10px;text-align:left;font-size:10px;letter-spacing:.5px;text-transform:uppercase}
+.prop-table th{background:#0a0e1a;color:#ffd166;padding:8px 10px;text-align:left;font-size:10px;letter-spacing:.5px;text-transform:uppercase}
 .prop-table th.right{text-align:right}
 .prop-table td{padding:8px 10px;border-bottom:1px solid #f0f4f8;vertical-align:top}
 .prop-table tr:nth-child(even) td{background:#f8fafc}
@@ -253,12 +253,12 @@ tr:hover td{background:rgba(0,212,255,0.03)}
 .prop-total-row{display:flex;justify-content:space-between;padding:5px 10px;font-size:12px}
 .prop-total-row.subtotal{border-top:1px solid #e8edf5}
 .prop-total-row.grand{background:#0a0e1a;color:#fff;border-radius:4px;font-weight:700;font-size:13px;margin-top:6px;padding:10px 12px}
-.prop-total-row.grand span:last-child{color:#00d4ff;font-family:'Courier New',monospace}
+.prop-total-row.grand span:last-child{color:#ffd166;font-family:'Courier New',monospace}
 .prop-conds{background:#f8fafc;border-radius:6px;padding:14px 16px;font-size:11px;color:#4a5568;line-height:1.8}
 .prop-conds strong{color:#1a1a1a}
 .prop-footer{background:#0a0e1a;padding:14px 36px;border-radius:0 0 8px 8px;display:flex;justify-content:space-between;align-items:center}
 .prop-footer span{font-size:10px;color:#4a5568}
-.prop-stamp{border:2px solid #00d4ff;border-radius:6px;padding:6px 14px;font-size:10px;color:#00d4ff;font-family:'Courier New',monospace;opacity:.6}
+.prop-stamp{border:2px solid #ffd166;border-radius:6px;padding:6px 14px;font-size:10px;color:#ffd166;font-family:'Courier New',monospace;opacity:.6}
 /* Selector de conceptos */
 .concepto-check-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
 .concepto-check-row:hover{background:rgba(0,212,255,0.04)}
@@ -718,62 +718,65 @@ tr:hover td{background:rgba(0,212,255,0.03)}
     </div>
   </div>
 
-  <!-- Vista previa — ancho completo -->
-  <div id="prop-preview-wrapper">
-    <div class="prop-preview" id="prop-preview">
-      <div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">
-        Selecciona conceptos en el <strong>Concentrado</strong> usando los checkboxes ☑ y regresa aquí para ver la propuesta
-      </div>
-    </div>
-  </div>
+  <!-- Vista previa + Resumen interno lado a lado -->
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start">
 
-  <!-- Análisis interno — no se imprime -->
-  <div class="no-print" id="prop-analisis-interno" style="margin-top:20px;display:none">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title" style="color:var(--gold)">🔒 Análisis interno de costos — <span style="color:var(--text3);font-size:11px;font-weight:400">Este panel NO se incluye en la propuesta al cliente</span></div>
-      </div>
-      <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-        <!-- Resumen numérico -->
-        <div>
-          <div style="margin-bottom:12px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent)">● Materiales</span><span class="highlight" id="int-mat">$0.00</span></div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent3)">● Mano de Obra</span><span class="highlight" id="int-mo">$0.00</span></div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent2)">● Equipo/Herr.</span><span class="highlight" id="int-eq">$0.00</span></div>
-          </div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span style="color:var(--text2)">Costo Directo</span><span class="highlight" id="int-cd">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Indirectos <small id="int-ind-pct">15%</small></span><span class="highlight" id="int-ind">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Financiamiento <small id="int-fin-pct">3%</small></span><span class="highlight" id="int-fin">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Utilidad <small id="int-ut-pct">8%</small></span><span class="highlight" id="int-ut">$0.00</span></div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:6px;font-weight:600"><span>Precio de Venta s/IVA</span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:16px" id="int-pu">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">IVA <small id="int-iva-pct">16%</small></span><span class="highlight" id="int-iva">$0.00</span></div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700"><span style="color:var(--gold)">TOTAL c/IVA</span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace" id="int-total">$0.00</span></div>
-        </div>
-        <!-- Composición gráfica -->
-        <div>
-          <div style="font-size:11px;color:var(--text2);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;font-weight:600">COMPOSICIÓN DEL COSTO DIRECTO</div>
-          <div class="progress-container">
-            <div class="progress-label"><span style="font-size:12px;color:var(--accent)">Materiales</span><span id="int-pct-mat" style="font-size:12px">0%</span></div>
-            <div class="progress-bar" style="height:10px"><div class="progress-fill" id="int-bar-mat" style="width:0%;background:var(--accent)"></div></div>
-          </div>
-          <div class="progress-container">
-            <div class="progress-label"><span style="font-size:12px;color:var(--accent3)">Mano de Obra</span><span id="int-pct-mo" style="font-size:12px">0%</span></div>
-            <div class="progress-bar" style="height:10px"><div class="progress-fill" id="int-bar-mo" style="width:0%;background:var(--accent3)"></div></div>
-          </div>
-          <div class="progress-container">
-            <div class="progress-label"><span style="font-size:12px;color:var(--accent2)">Equipo/Herr.</span><span id="int-pct-eq" style="font-size:12px">0%</span></div>
-            <div class="progress-bar" style="height:10px"><div class="progress-fill" id="int-bar-eq" style="width:0%;background:var(--accent2)"></div></div>
-          </div>
-          <div class="divider" style="margin:16px 0"></div>
-          <div style="font-size:11px;color:var(--text2);margin-bottom:8px;font-family:'IBM Plex Mono',monospace;font-weight:600">MARGEN SOBRE COSTO DIRECTO</div>
-          <div style="font-size:28px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--gold)" id="int-margen">0%</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:4px">Ind. + Fin. + Utilidad sobre CD</div>
+    <!-- Vista previa -->
+    <div id="prop-preview-wrapper">
+      <div class="prop-preview" id="prop-preview">
+        <div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">
+          Selecciona conceptos en el <strong>Concentrado</strong> usando los checkboxes ☑ y regresa aquí para ver la propuesta
         </div>
       </div>
     </div>
+
+    <!-- Análisis interno — sticky, no se imprime -->
+    <div class="no-print" id="prop-analisis-interno" style="display:none;position:sticky;top:80px">
+      <div class="card">
+        <div class="card-header" style="background:rgba(255,209,102,0.08);border-bottom-color:var(--gold)">
+          <div class="card-title" style="color:var(--gold);font-size:12px">💰 Resumen de costos</div>
+          <span style="font-size:10px;color:var(--text3)">🔒 Interno</span>
+        </div>
+        <div class="card-body" style="padding:14px 16px">
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent)">● Materiales</span><span class="highlight" id="int-mat">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent3)">● Mano de Obra</span><span class="highlight" id="int-mo">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent2)">● Equipo/Herr.</span><span class="highlight" id="int-eq">$0.00</span></div>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="color:var(--text2)">Costo Directo</span><span class="highlight" id="int-cd">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">Indirectos <small id="int-ind-pct">15%</small></span><span class="highlight" id="int-ind">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">Financiamiento <small id="int-fin-pct">3%</small></span><span class="highlight" id="int-fin">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">Utilidad <small id="int-ut-pct">8%</small></span><span class="highlight" id="int-ut">$0.00</span></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;font-weight:600"><span>Precio Unitario</span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace" id="int-pu">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">IVA <small id="int-iva-pct">16%</small></span><span class="highlight" id="int-iva">$0.00</span></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700"><span style="color:var(--gold)">PRECIO TOTAL c/IVA</span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace" id="int-total">$0.00</span></div>
+
+          <div class="divider"></div>
+          <div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;font-weight:600">COMPOSICIÓN COSTO DIRECTO</div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:11px">Mat.</span><span id="int-pct-mat" style="font-size:11px">0%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="int-bar-mat" style="width:0%;background:var(--accent)"></div></div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:11px">M.O.</span><span id="int-pct-mo" style="font-size:11px">0%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="int-bar-mo" style="width:0%;background:var(--accent3)"></div></div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-label"><span style="font-size:11px">Equipo</span><span id="int-pct-eq" style="font-size:11px">0%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="int-bar-eq" style="width:0%;background:var(--accent2)"></div></div>
+          </div>
+          <div class="divider"></div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-family:'IBM Plex Mono',monospace">MARGEN s/CD</div>
+            <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--gold)" id="int-margen">0%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2429,43 +2432,50 @@ function renderPropuesta(){
   }
   let subtotal=0, totalMat=0, totalMO=0;
   selected.forEach(a=>{
-    const qty = a.cantidad||1;
-    subtotal += (a.pu_total||0)*qty;
+    const qty    = a.cantidad||1;
+    const puTot  = a.pu_total || 0;
+    subtotal += puTot * qty;
     const matCD = a.mat ? a.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
     const moCD  = a.mo  ? a.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0;
     const eqCD  = a.eq  ? a.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
     const cd    = matCD + moCD + eqCD;
-    const extra = cd * ((p.indirectos||15)/100 + (p.financiamiento||3)/100 + (p.utilidad||8)/100);
-    // PU por unidad * cantidad
-    totalMat += matCD * qty;
-    totalMO  += (moCD + eqCD + extra) * qty;
+    // Usar proporciones sobre el puTotal real para exactitud
+    const propM = cd > 0 ? matCD / cd : 0;
+    const propO = cd > 0 ? (moCD+eqCD) / cd : 0;
+    totalMat += puTot * propM * qty;
+    totalMO  += puTot * propO * qty;
   });
   const ivaAmt=subtotal*ivaRate, total=subtotal+ivaAmt;
   const fechaObj=new Date(fecha+'T12:00:00');
   const fechaFmt=fechaObj.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
   const vigDate=new Date(fechaObj); vigDate.setDate(vigDate.getDate()+parseInt(vigencia));
   const vigFmt=vigDate.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
-  const thClave = showClave ? `<th style="width:80px;color:#00d4ff">Clave</th>` : '';
-  const thPU    = showPU    ? `<th class="right" style="width:100px;color:#00d4ff">P.U.</th>` : '';
-  const thMat   = `<th class="right" style="width:100px;color:#00d4ff">P.U. Mat.</th>`;
-  const thMO    = `<th class="right" style="width:100px;color:#00d4ff">P.U. M.O.</th>`;
+  const thClave = showClave ? `<th style="width:80px;color:#ffd166">Clave</th>` : '';
+  const thPU    = showPU    ? `<th class="right" style="width:100px;color:#ffd166">P.U.</th>` : '';
+  const thMat   = `<th class="right" style="width:100px;color:#ffd166">P.U. Mat.</th>`;
+  const thMO    = `<th class="right" style="width:100px;color:#ffd166">P.U. M.O.</th>`;
   let rows='';
   selected.forEach(apu=>{
     const qty    = apu.cantidad||1;
-    const pu     = precioIva ? (apu.pu_total||0)*(1+ivaRate) : (apu.pu_total||0);
-    // Per-unit breakdown (PU, not multiplied by qty)
+    // Use stored pu values for accuracy (calculated when APU was saved)
+    const puCD   = apu.pu_cd    || 0;   // costo directo por unidad
+    const puTotal= apu.pu_total || 0;   // precio unitario s/IVA (cd + ind + fin + ut)
+    const pu     = precioIva ? puTotal*(1+ivaRate) : puTotal;
+    // Desglose por tipo (por unidad, sin qty)
     const rMatCD = apu.mat ? apu.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
     const rMoCD  = apu.mo  ? apu.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0;
     const rEqCD  = apu.eq  ? apu.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0;
     const rCD    = rMatCD + rMoCD + rEqCD;
-    const rExtra = rCD * ((p.indirectos||15)/100 + (p.financiamiento||3)/100 + (p.utilidad||8)/100);
-    // PU por unidad (sin qty)
-    const puMat = precioIva ? rMatCD*(1+ivaRate) : rMatCD;
-    const puMO  = precioIva ? (rMoCD+rEqCD+rExtra)*(1+ivaRate) : (rMoCD+rEqCD+rExtra);
-    // Importe totalizado = (qty * puMat) + (qty * puMO) = qty * pu
-    const impMat = puMat * qty;
-    const impMO  = puMO  * qty;
-    const impTotal = impMat + impMO;
+    // Proporción de cada componente sobre el CD total
+    const propMat = rCD > 0 ? rMatCD / rCD : 0;
+    const propMO  = rCD > 0 ? (rMoCD + rEqCD) / rCD : 0;
+    // PU por tipo = proporción × puTotal (respeta los % reales del APU guardado)
+    const puMat  = precioIva ? puTotal*(1+ivaRate)*propMat : puTotal*propMat;
+    const puMO   = precioIva ? puTotal*(1+ivaRate)*propMO  : puTotal*propMO;
+    // Importe = qty × pu (usando el PU oficial del APU)
+    const impTotal = pu * qty;
+    const impMat   = puMat * qty;
+    const impMO    = puMO  * qty;
     rows += `<tr>
       ${showClave ? `<td class="clave">${apu.clave||'—'}</td>` : ''}
       <td>${apu.desc}</td>
@@ -2528,7 +2538,7 @@ function renderPropuesta(){
     <div class="prop-section">
       <div class="prop-section-title">Conceptos de trabajo</div>
       <table class="prop-table">
-        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cant.</th>${thPU}${thMat}${thMO}<th class="right" style="width:120px;color:#00d4ff">Importe</th></tr></thead>
+        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cant.</th>${thPU}${thMat}${thMO}<th class="right" style="width:120px;color:#ffd166">Importe</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <div class="prop-totals"><div class="prop-totals-box">${totalesHtml}</div></div>
@@ -2576,7 +2586,6 @@ function exportPropuestaPDF(){
   const analisisEl = document.getElementById('prop-analisis-interno');
   if(analisisEl && selected.length){
     analisisEl.style.display = '';
-    // Compute raw CD breakdown (without IFU)
     let intMat=0, intMO=0, intEQ=0;
     selected.forEach(a=>{
       const qty = a.cantidad||1;
@@ -2595,19 +2604,16 @@ function exportPropuestaPDF(){
     const pctM = intCD ? Math.round(intMat/intCD*100) : 0;
     const pctO = intCD ? Math.round(intMO/intCD*100)  : 0;
     const pctE = intCD ? Math.round(intEQ/intCD*100)  : 0;
-
-    setText('int-mat', '$'+num(intMat)); setText('int-mo', '$'+num(intMO)); setText('int-eq', '$'+num(intEQ));
-    setText('int-cd', '$'+num(intCD));  setText('int-ind', '$'+num(intInd)); setText('int-fin', '$'+num(intFin));
-    setText('int-ut', '$'+num(intUt));  setText('int-pu', '$'+num(intPU));
-    setText('int-iva', '$'+num(intIva)); setText('int-total', '$'+num(intTot));
-    setText('int-margen', margen+'%');
-    setText('int-ind-pct', (p.indirectos||15)+'%');
-    setText('int-fin-pct', (p.financiamiento||3)+'%');
-    setText('int-ut-pct',  (p.utilidad||8)+'%');
-    setText('int-iva-pct', (p.iva||16)+'%');
-    setText('int-pct-mat', pctM+'%'); setStyle('int-bar-mat','width',pctM+'%');
-    setText('int-pct-mo',  pctO+'%'); setStyle('int-bar-mo', 'width',pctO+'%');
-    setText('int-pct-eq',  pctE+'%'); setStyle('int-bar-eq', 'width',pctE+'%');
+    setText('int-mat','$'+num(intMat)); setText('int-mo','$'+num(intMO)); setText('int-eq','$'+num(intEQ));
+    setText('int-cd','$'+num(intCD));   setText('int-ind','$'+num(intInd));
+    setText('int-fin','$'+num(intFin)); setText('int-ut','$'+num(intUt));
+    setText('int-pu','$'+num(intPU));   setText('int-iva','$'+num(intIva));
+    setText('int-total','$'+num(intTot)); setText('int-margen',margen+'%');
+    setText('int-ind-pct',(p.indirectos||15)+'%'); setText('int-fin-pct',(p.financiamiento||3)+'%');
+    setText('int-ut-pct',(p.utilidad||8)+'%');     setText('int-iva-pct',(p.iva||16)+'%');
+    setText('int-pct-mat',pctM+'%'); setStyle('int-bar-mat','width',pctM+'%');
+    setText('int-pct-mo', pctO+'%'); setStyle('int-bar-mo', 'width',pctO+'%');
+    setText('int-pct-eq', pctE+'%'); setStyle('int-bar-eq', 'width',pctE+'%');
   } else if(analisisEl){
     analisisEl.style.display = 'none';
   }
