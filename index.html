@@ -718,66 +718,91 @@ tr:hover td{background:rgba(0,212,255,0.03)}
     </div>
   </div>
 
-  <!-- Vista previa + Resumen interno lado a lado -->
-  <div style="display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start">
-
-    <!-- Vista previa -->
-    <div id="prop-preview-wrapper">
-      <div class="prop-preview" id="prop-preview">
-        <div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">
-          Selecciona conceptos en el <strong>Concentrado</strong> usando los checkboxes ☑ y regresa aquí para ver la propuesta
-        </div>
+  <!-- Resumen interno — visible siempre, oculto en impresión -->
+  <div class="no-print" id="prop-analisis-interno" style="display:none;margin-bottom:16px">
+    <div class="card" style="border-color:var(--gold)">
+      <div class="card-header" style="background:rgba(255,209,102,0.08);border-bottom-color:rgba(255,209,102,0.3)">
+        <div class="card-title" style="color:var(--gold)">💰 Resumen de costos — <span style="color:var(--text3);font-size:11px;font-weight:400">🔒 Uso interno · no se imprime</span></div>
       </div>
-    </div>
+      <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr) 1.2fr;gap:16px;align-items:start">
 
-    <!-- Análisis interno — sticky, no se imprime -->
-    <div class="no-print" id="prop-analisis-interno" style="display:none;position:sticky;top:80px">
-      <div class="card">
-        <div class="card-header" style="background:rgba(255,209,102,0.08);border-bottom-color:var(--gold)">
-          <div class="card-title" style="color:var(--gold);font-size:12px">💰 Resumen de costos</div>
-          <span style="font-size:10px;color:var(--text3)">🔒 Interno</span>
+        <!-- Col 1: Materiales/MO/EQ -->
+        <div>
+          <div style="font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">Costo Directo</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent)">● Materiales</span><span class="highlight" id="int-mat">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent3)">● Mano de Obra</span><span class="highlight" id="int-mo">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent2)">● Equipo/Herr.</span><span class="highlight" id="int-eq">$0.00</span></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span style="color:var(--text2)">CD Total</span><span class="highlight" id="int-cd">$0.00</span></div>
         </div>
-        <div class="card-body" style="padding:14px 16px">
-          <div style="margin-bottom:10px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent)">● Materiales</span><span class="highlight" id="int-mat">$0.00</span></div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent3)">● Mano de Obra</span><span class="highlight" id="int-mo">$0.00</span></div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--accent2)">● Equipo/Herr.</span><span class="highlight" id="int-eq">$0.00</span></div>
-          </div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="color:var(--text2)">Costo Directo</span><span class="highlight" id="int-cd">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">Indirectos <small id="int-ind-pct">15%</small></span><span class="highlight" id="int-ind">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">Financiamiento <small id="int-fin-pct">3%</small></span><span class="highlight" id="int-fin">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">Utilidad <small id="int-ut-pct">8%</small></span><span class="highlight" id="int-ut">$0.00</span></div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;font-weight:600"><span>Precio Unitario</span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace" id="int-pu">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">IVA <small id="int-iva-pct">16%</small></span><span class="highlight" id="int-iva">$0.00</span></div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700"><span style="color:var(--gold)">PRECIO TOTAL c/IVA</span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace" id="int-total">$0.00</span></div>
 
+        <!-- Col 2: Indirectos/Fin/Ut -->
+        <div>
+          <div style="font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">Factores</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--text2)">Indirectos <small id="int-ind-pct" style="color:var(--gold)">15%</small></span><span class="highlight" id="int-ind">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--text2)">Financiamiento <small id="int-fin-pct" style="color:var(--gold)">3%</small></span><span class="highlight" id="int-fin">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--text2)">Utilidad <small id="int-ut-pct" style="color:var(--gold)">8%</small></span><span class="highlight" id="int-ut">$0.00</span></div>
           <div class="divider"></div>
-          <div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;font-weight:600">COMPOSICIÓN COSTO DIRECTO</div>
+          <div style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-bottom:4px">MARGEN s/CD</div>
+          <div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--gold)" id="int-margen">0%</div>
+        </div>
+
+        <!-- Col 3: PU / IVA / Total -->
+        <div>
+          <div style="font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">Precio de venta</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600"><span>P.U. s/IVA</span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace" id="int-pu">$0.00</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--text2)">IVA <small id="int-iva-pct" style="color:var(--gold)">16%</small></span><span class="highlight" id="int-iva">$0.00</span></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700"><span style="color:var(--gold)">TOTAL c/IVA</span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace" id="int-total">$0.00</span></div>
+        </div>
+
+        <!-- Col 4: Ajustar porcentajes -->
+        <div>
+          <div style="font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">Ajustar %</div>
+          <div class="form-group" style="margin-bottom:8px">
+            <label style="font-size:10px">Indirectos %</label>
+            <input type="number" id="proj-indirectos-copy" style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:5px 8px;border-radius:4px;font-size:12px" oninput="syncPct('indirectos',this.value)">
+          </div>
+          <div class="form-group" style="margin-bottom:8px">
+            <label style="font-size:10px">Financiamiento %</label>
+            <input type="number" id="proj-financiamiento-copy" style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:5px 8px;border-radius:4px;font-size:12px" oninput="syncPct('financiamiento',this.value)">
+          </div>
+          <div class="form-group" style="margin-bottom:8px">
+            <label style="font-size:10px">Utilidad %</label>
+            <input type="number" id="proj-utilidad-copy" style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:5px 8px;border-radius:4px;font-size:12px" oninput="syncPct('utilidad',this.value)">
+          </div>
+        </div>
+
+        <!-- Col 5: Composición barras -->
+        <div>
+          <div style="font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">Composición CD</div>
           <div class="progress-container">
-            <div class="progress-label"><span style="font-size:11px">Mat.</span><span id="int-pct-mat" style="font-size:11px">0%</span></div>
+            <div class="progress-label"><span style="font-size:11px;color:var(--accent)">Mat.</span><span id="int-pct-mat" style="font-size:11px">0%</span></div>
             <div class="progress-bar"><div class="progress-fill" id="int-bar-mat" style="width:0%;background:var(--accent)"></div></div>
           </div>
           <div class="progress-container">
-            <div class="progress-label"><span style="font-size:11px">M.O.</span><span id="int-pct-mo" style="font-size:11px">0%</span></div>
+            <div class="progress-label"><span style="font-size:11px;color:var(--accent3)">M.O.</span><span id="int-pct-mo" style="font-size:11px">0%</span></div>
             <div class="progress-bar"><div class="progress-fill" id="int-bar-mo" style="width:0%;background:var(--accent3)"></div></div>
           </div>
           <div class="progress-container">
-            <div class="progress-label"><span style="font-size:11px">Equipo</span><span id="int-pct-eq" style="font-size:11px">0%</span></div>
+            <div class="progress-label"><span style="font-size:11px;color:var(--accent2)">Equipo</span><span id="int-pct-eq" style="font-size:11px">0%</span></div>
             <div class="progress-bar"><div class="progress-fill" id="int-bar-eq" style="width:0%;background:var(--accent2)"></div></div>
           </div>
-          <div class="divider"></div>
-          <div style="text-align:center">
-            <div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-family:'IBM Plex Mono',monospace">MARGEN s/CD</div>
-            <div style="font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--gold)" id="int-margen">0%</div>
-          </div>
         </div>
+
       </div>
     </div>
-
   </div>
+
+  <!-- Vista previa — ancho completo -->
+  <div id="prop-preview-wrapper">
+    <div class="prop-preview" id="prop-preview">
+      <div style="padding:60px;text-align:center;color:#8899bb;font-size:13px">
+        Selecciona conceptos en el <strong>Concentrado</strong> usando los checkboxes ☑ y regresa aquí para ver la propuesta
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ======== BASE DE DATOS ======== -->
@@ -2329,6 +2354,22 @@ function exportCSV(){
 // ============================================================
 let propSelectedIds = new Set();
 
+function syncPct(field, v){
+  // Update main project field and copy field in sync
+  const mainId = `proj-${field}`;
+  const copyId = `proj-${field}-copy`;
+  setValue(mainId, v); setValue(copyId, v);
+  saveProyecto();
+  renderPropuesta();
+}
+
+function syncCopyFields(){
+  const p = db.proyecto;
+  setValue('proj-indirectos-copy',    p.indirectos    || 15);
+  setValue('proj-financiamiento-copy', p.financiamiento || 3);
+  setValue('proj-utilidad-copy',       p.utilidad      || 8);
+}
+
 function initPropuesta(){
   const hoyStr = new Date().toISOString().slice(0,10);
   const propFecha = document.getElementById('prop-fecha');
@@ -2336,6 +2377,7 @@ function initPropuesta(){
   const p = db.proyecto;
   if(p.nombre && document.getElementById('proj-nombre')) setValue('proj-nombre', p.nombre);
   if(!val('prop-folio')) generarFolio();
+  syncCopyFields();
   updatePropuestaBadge();
   renderPropuesta();
 }
