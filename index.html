@@ -2749,9 +2749,7 @@ function renderPropuesta(){
   const vigDate=new Date(fechaObj); vigDate.setDate(vigDate.getDate()+parseInt(vigencia));
   const vigFmt=vigDate.toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
   const thClave = showClave ? `<th style="width:80px;color:#ffd166">Clave</th>` : '';
-  const thPU    = showPU    ? `<th class="right" style="width:100px;color:#ffd166">P.U.</th>` : '';
-  const thMat   = `<th class="right" style="width:100px;color:#ffd166">P.U. Mat.</th>`;
-  const thMO    = `<th class="right" style="width:100px;color:#ffd166">P.U. M.O.</th>`;
+  // No separate P.U. column — layout is: Clave | Desc | Unidad | Cant | PU Mat. | PU M.O. | Importe
   let rows='';
   selected.forEach(apu=>{
     const qty    = apu.cantidad||1;
@@ -2779,26 +2777,72 @@ function renderPropuesta(){
       <td>${apu.desc}</td>
       <td class="right">${apu.unidad}</td>
       <td class="right">${qty}</td>
-      ${showPU ? `<td class="right">$${num(pu)}</td>` : ''}
       <td class="right" style="color:#0070c0">$${num(puMat)}</td>
       <td class="right" style="color:#00805a">$${num(puMO)}</td>
       <td class="right" style="font-weight:700">$${num(impTotal)}</td>
     </tr>`;
   });
+  // Calcular desglose completo para el resumen
+  let cdMat=0, cdMO=0, cdEQ=0;
+  selected.forEach(a=>{
+    const qty = a.cantidad||1;
+    cdMat += (a.mat ? a.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0) * qty;
+    cdMO  += (a.mo  ? a.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0) * qty;
+    cdEQ  += (a.eq  ? a.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0) * qty;
+  });
+  const cdTotal  = cdMat + cdMO + cdEQ;
+  const indAmt   = cdTotal * (p.indirectos||15)/100;
+  const finAmt   = cdTotal * (p.financiamiento||3)/100;
+  const utAmt    = cdTotal * (p.utilidad||8)/100;
+  const subtotalIFU = cdTotal + indAmt + finAmt + utAmt;
+  const ivaAmtFull  = subtotalIFU * ivaRate;
+  const totalFull   = subtotalIFU + ivaAmtFull;
+
   let totalesHtml=`
-    <div class="prop-total-row subtotal" style="font-size:13px;font-weight:600">
-      <span>Subtotal s/IVA</span>
-      <span style="font-family:'Courier New',monospace">$${num(subtotal)}</span>
-    </div>`;
-  if(showIva) totalesHtml+=`
-    <div class="prop-total-row" style="font-size:12px">
-      <span>IVA (${p.iva||16}%)</span>
-      <span style="font-family:'Courier New',monospace">$${num(ivaAmt)}</span>
-    </div>`;
-  totalesHtml+=`
-    <div class="prop-total-row grand">
-      <span>TOTAL${showIva?' c/IVA':''}</span>
-      <span>$${num(showIva?total:subtotal)}</span>
+    <div style="background:#f8fafc;border-radius:8px;padding:16px 20px;min-width:320px;border:1px solid #e2eaf0">
+      <div style="font-size:11px;font-weight:700;color:#0a0e1a;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <span>📋</span> Desglose del Costo Total
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #e8edf5">
+        <span style="color:#4a5568">Costo Directo Materiales:</span>
+        <span style="font-family:'Courier New',monospace;color:#0070c0">$${num(cdMat)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #e8edf5">
+        <span style="color:#4a5568">Costo Directo Mano de Obra:</span>
+        <span style="font-family:'Courier New',monospace;color:#00805a">$${num(cdMO)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0 10px;font-size:12px;border-bottom:2px solid #0a0e1a">
+        <span style="color:#4a5568">Herramienta y Equipo:</span>
+        <span style="font-family:'Courier New',monospace;color:#cc5500">$${num(cdEQ)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;font-weight:700;border-bottom:1px solid #e8edf5">
+        <span>SUBTOTAL DIRECTO:</span>
+        <span style="font-family:'Courier New',monospace">$${num(cdTotal)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #e8edf5">
+        <span style="color:#4a5568">Indirectos (${p.indirectos||15}%):</span>
+        <span style="font-family:'Courier New',monospace">$${num(indAmt)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #e8edf5">
+        <span style="color:#4a5568">Financiamiento (${p.financiamiento||3}%):</span>
+        <span style="font-family:'Courier New',monospace">$${num(finAmt)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0 10px;font-size:12px;border-bottom:2px solid #0a0e1a">
+        <span style="color:#4a5568">Utilidad (${p.utilidad||8}%):</span>
+        <span style="font-family:'Courier New',monospace">$${num(utAmt)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;font-weight:700;border-bottom:1px solid #e8edf5">
+        <span>SUBTOTAL ANTES DE IVA:</span>
+        <span style="font-family:'Courier New',monospace">$${num(subtotalIFU)}</span>
+      </div>
+      ${showIva ? `<div style="display:flex;justify-content:space-between;padding:4px 0 10px;font-size:12px;border-bottom:2px solid #0a0e1a">
+        <span style="color:#4a5568">IVA (${p.iva||16}%):</span>
+        <span style="font-family:'Courier New',monospace">$${num(ivaAmtFull)}</span>
+      </div>` : ''}
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:16px;font-weight:700">
+        <span>TOTAL:</span>
+        <span style="font-family:'Courier New',monospace;color:#0a0e1a">$${num(showIva?totalFull:subtotalIFU)}</span>
+      </div>
     </div>`;
 
   preview.innerHTML=`
@@ -2836,7 +2880,7 @@ function renderPropuesta(){
     <div class="prop-section">
       <div class="prop-section-title">Conceptos de trabajo</div>
       <table class="prop-table">
-        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cant.</th>${thPU}${thMat}${thMO}<th class="right" style="width:120px;color:#ffd166">Importe</th></tr></thead>
+        <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cantidad</th><th class="right" style="width:105px;color:#0070c0">P.U. Mat.</th><th class="right" style="width:105px;color:#00805a">P.U. M.O.</th><th class="right" style="width:110px;color:#ffd166">Importe</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <div class="prop-totals"><div class="prop-totals-box">${totalesHtml}</div></div>
