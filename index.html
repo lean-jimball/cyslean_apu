@@ -313,6 +313,7 @@ tr:hover td{background:rgba(0,212,255,0.03)}
   <div class="tab" onclick="openTab('apu')" id="tab-apu"><span class="icon">⚡</span> Análisis APU</div>
   <div class="tab" onclick="openTab('concentrado')" id="tab-concentrado"><span class="icon">📋</span> Concentrado</div>
   <div class="tab" onclick="openTab('propuesta')" id="tab-propuesta"><span class="icon">📄</span> Propuesta</div>
+  <div class="tab" onclick="openTab('explosion')" id="tab-explosion"><span class="icon">🧨</span> Explosión Mat.</div>
   <div class="tab" onclick="openTab('bd')" id="tab-bd"><span class="icon">🗄</span> Base de Datos</div>
 </div>
 
@@ -487,7 +488,7 @@ tr:hover td{background:rgba(0,212,255,0.03)}
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 320px;gap:16px">
+  <div>
     <!-- Panel principal -->
     <div>
       <div class="card" style="margin-bottom:16px">
@@ -557,43 +558,6 @@ tr:hover td{background:rgba(0,212,255,0.03)}
         </div>
       </div>
     </div>
-
-    <!-- Panel resumen -->
-    <div>
-      <div class="card" style="position:sticky;top:80px">
-        <div class="card-header"><div class="card-title">💰 Resumen de costos</div></div>
-        <div class="card-body">
-          <div style="margin-bottom:12px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent)">● Materiales</span><span class="highlight" id="res-mat">$0.00</span></div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent3)">● Mano de Obra</span><span class="highlight" id="res-mo">$0.00</span></div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span style="color:var(--accent2)">● Equipo/Herr.</span><span class="highlight" id="res-eq">$0.00</span></div>
-          </div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span style="color:var(--text2)">Costo Directo</span><span class="highlight" id="res-cd">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Indirectos <small id="pct-ind-lbl">15%</small></span><span class="highlight" id="res-ind">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Financiamiento <small id="pct-fin-lbl">3%</small></span><span class="highlight" id="res-fin">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">Utilidad <small id="pct-ut-lbl">8%</small></span><span class="highlight" id="res-ut">$0.00</span></div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:6px;font-weight:600"><span>Precio Unitario</span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:18px" id="res-pu">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">IVA <small id="pct-iva-lbl">16%</small></span><span class="highlight" id="res-iva">$0.00</span></div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700"><span style="color:var(--gold)">PRECIO TOTAL c/IVA</span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace" id="res-total">$0.00</span></div>
-
-          <div class="divider"></div>
-          <div style="font-size:11px;color:var(--text2);margin-bottom:8px;font-family:'IBM Plex Mono',monospace">COMPOSICIÓN COSTO DIRECTO</div>
-          <div class="progress-container">
-            <div class="progress-label"><span style="font-size:11px">Mat.</span><span id="r-pct-mat" style="font-size:11px">0%</span></div>
-            <div class="progress-bar"><div class="progress-fill" id="r-bar-mat" style="width:0%;background:var(--accent)"></div></div>
-          </div>
-          <div class="progress-container">
-            <div class="progress-label"><span style="font-size:11px">M.O.</span><span id="r-pct-mo" style="font-size:11px">0%</span></div>
-            <div class="progress-bar"><div class="progress-fill" id="r-bar-mo" style="width:0%;background:var(--accent3)"></div></div>
-          </div>
-          <div class="progress-container">
-            <div class="progress-label"><span style="font-size:11px">Equipo</span><span id="r-pct-eq" style="font-size:11px">0%</span></div>
-            <div class="progress-bar"><div class="progress-fill" id="r-bar-eq" style="width:0%;background:var(--accent2)"></div></div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -803,6 +767,76 @@ tr:hover td{background:rgba(0,212,255,0.03)}
     </div>
   </div>
 
+</div>
+
+<!-- ======== EXPLOSIÓN DE MATERIALES ======== -->
+<div class="page" id="page-explosion">
+  <div class="flex-between" style="margin-bottom:18px">
+    <div>
+      <h2 style="font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:16px">🧨 Explosión de Materiales</h2>
+      <p style="font-size:12px;color:var(--text2);margin-top:4px">Materiales requeridos de los conceptos seleccionados en la Propuesta · cantidades totalizadas</p>
+    </div>
+    <div class="flex gap-8">
+      <button class="btn btn-secondary" onclick="openTab('concentrado')">← Seleccionar conceptos</button>
+      <button class="btn btn-secondary" onclick="exportExplosionCSV()">📊 CSV</button>
+      <button class="btn btn-primary" onclick="exportExplosionExcel()">📊 Exportar Excel</button>
+    </div>
+  </div>
+
+  <!-- Resumen rápido -->
+  <div class="stats-grid" style="margin-bottom:16px" id="exp-stats" style="display:none">
+    <div class="stat-card blue">
+      <div class="stat-label">Conceptos incluidos</div>
+      <div class="stat-value blue" id="exp-stat-conceptos">0</div>
+      <div class="stat-sub">Seleccionados en propuesta</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">Tipos de material</div>
+      <div class="stat-value orange" id="exp-stat-tipos">0</div>
+      <div class="stat-sub">Insumos únicos</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Total materiales</div>
+      <div class="stat-value green" id="exp-stat-total">$0</div>
+      <div class="stat-sub">Costo directo materiales</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">% sobre CD</div>
+      <div class="stat-value gold" id="exp-stat-pct">0%</div>
+      <div class="stat-sub">Participación materiales</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📦 Lista de materiales consolidada</div>
+      <div class="flex gap-8">
+        <input class="search-input" type="text" id="exp-search" placeholder="🔍 Buscar material..." oninput="filterExplosion()" style="width:220px">
+        <span class="filter-chip active" onclick="filterExpType('all',this)">Todos</span>
+        <span class="filter-chip" onclick="filterExpType('mat',this)">Materiales</span>
+        <span class="filter-chip" onclick="filterExpType('mo',this)">M.O.</span>
+        <span class="filter-chip" onclick="filterExpType('eq',this)">Equipo</span>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Clave</th>
+            <th>Descripción del material</th>
+            <th>Tipo</th>
+            <th>Unidad</th>
+            <th class="number">P. Unit.</th>
+            <th class="number">Cantidad Total</th>
+            <th class="number">Importe</th>
+            <th>Conceptos que lo usan</th>
+          </tr>
+        </thead>
+        <tbody id="explosion-tbody"></tbody>
+        <tfoot id="explosion-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
 </div>
 
 <!-- ======== BASE DE DATOS ======== -->
@@ -1251,6 +1285,7 @@ function openTab(name){
   if(name==='catalogo') renderCatalogo();
   if(name==='dashboard') updateDashboard();
   if(name==='propuesta') initPropuesta();
+  if(name==='explosion') renderExplosion();
 }
 
 // ============================================================
@@ -2350,8 +2385,229 @@ function exportCSV(){
 
 
 // ============================================================
-// PROPUESTA COMERCIAL
+// EXPLOSIÓN DE MATERIALES
 // ============================================================
+let expFilter = 'all';
+let expData   = [];   // consolidated materials list
+
+function renderExplosion(){
+  const selected = db.apus.filter(a => propSelectedIds.has(a.id));
+  const tbody = document.getElementById('explosion-tbody');
+  const tfoot = document.getElementById('explosion-tfoot');
+
+  if(!selected.length){
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">🧨</div>
+      <p>Selecciona conceptos en el <strong>Concentrado</strong> para generar la explosión</p></div></td></tr>`;
+    tfoot.innerHTML = '';
+    expData = [];
+    updateExpStats(selected, []);
+    return;
+  }
+
+  // ── Consolidar materiales ─────────────────────────────────
+  const mapaInsumos = {};  // clave → {info, cantidadTotal, importeTotal, conceptos[]}
+
+  selected.forEach(apu => {
+    const qty = apu.cantidad || 1;
+    // Procesar los 3 tipos de insumos
+    const grupos = [
+      { items: apu.mat||[], tipo:'mat' },
+      { items: apu.mo ||[], tipo:'mo'  },
+      { items: apu.eq ||[], tipo:'eq'  },
+    ];
+    grupos.forEach(({items, tipo}) => {
+      items.forEach(r => {
+        const key = r.clave || r.desc.slice(0,30);
+        // Cantidad real que consume este APU por unidad de concepto
+        let cantPorUnidad;
+        if(tipo === 'mo'){
+          // M.O.: rendimiento ya es jornadas por unidad (ya invertido)
+          cantPorUnidad = (r.rendimiento || 1);
+        } else {
+          cantPorUnidad = r.cantidad * (r.rendimiento || 1);
+        }
+        const cantTotal = cantPorUnidad * qty;
+        const precio    = r.precio || 0;
+        const factor    = tipo === 'mo' ? (r.factor_mo || 1) : 1;
+        const importeU  = tipo === 'mo'
+          ? (precio * factor) / (r.rendimiento || 1)
+          : precio;
+        const impTotal  = importeU * cantPorUnidad * qty;
+
+        if(!mapaInsumos[key]){
+          mapaInsumos[key] = {
+            clave: r.clave || '—',
+            desc:  r.desc,
+            tipo,
+            unidad: r.unidad,
+            precio: importeU,   // precio efectivo por unidad del insumo
+            cantTotal: 0,
+            impTotal:  0,
+            conceptos: []
+          };
+        }
+        mapaInsumos[key].cantTotal += cantTotal;
+        mapaInsumos[key].impTotal  += impTotal;
+        if(!mapaInsumos[key].conceptos.includes(apu.clave||apu.desc.slice(0,20))){
+          mapaInsumos[key].conceptos.push(apu.clave||apu.desc.slice(0,20));
+        }
+      });
+    });
+  });
+
+  expData = Object.values(mapaInsumos).sort((a,b) => {
+    // Sort: mat first, then mo, then eq; within type by importe desc
+    const order = {mat:0, mo:1, eq:2};
+    if(order[a.tipo] !== order[b.tipo]) return order[a.tipo] - order[b.tipo];
+    return b.impTotal - a.impTotal;
+  });
+
+  updateExpStats(selected, expData);
+  renderExpTable();
+}
+
+function renderExpTable(){
+  const tbody = document.getElementById('explosion-tbody');
+  const tfoot = document.getElementById('explosion-tfoot');
+  const search = (document.getElementById('exp-search')||{value:''}).value.toLowerCase();
+
+  let items = expData;
+  if(expFilter !== 'all') items = items.filter(i=>i.tipo===expFilter);
+  if(search) items = items.filter(i=>(i.clave+i.desc).toLowerCase().includes(search));
+
+  if(!items.length){
+    tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><p>Sin resultados</p></td></tr>`;
+    tfoot.innerHTML = '';
+    return;
+  }
+
+  const tagMap = {mat:'tag-mat', mo:'tag-mo', eq:'tag-eq'};
+  const lblMap = {mat:'MAT', mo:'M.O.', eq:'EQ'};
+  let totalImp = 0;
+
+  tbody.innerHTML = items.map(ins => {
+    totalImp += ins.impTotal;
+    return `<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)">${ins.clave}</td>
+      <td style="font-size:12px">${ins.desc}</td>
+      <td><span class="tag ${tagMap[ins.tipo]}">${lblMap[ins.tipo]}</span></td>
+      <td>${ins.unidad}</td>
+      <td class="number">$${num(ins.precio)}</td>
+      <td class="number" style="font-family:'IBM Plex Mono',monospace;color:var(--gold);font-weight:600">${numRaw(ins.cantTotal)}</td>
+      <td class="number" style="color:var(--accent)">${'$'+num(ins.impTotal)}</td>
+      <td style="font-size:11px;color:var(--text2)">${ins.conceptos.join(', ')}</td>
+    </tr>`;
+  }).join('');
+
+  tfoot.innerHTML = `
+    <tr class="tr-total">
+      <td colspan="6" style="text-align:right;padding-right:16px">TOTAL MATERIALES (filtro actual):</td>
+      <td class="number">$${num(totalImp)}</td>
+      <td></td>
+    </tr>`;
+}
+
+function updateExpStats(selected, data){
+  setText('exp-stat-conceptos', selected.length);
+  setText('exp-stat-tipos', data.filter(d=>d.tipo==='mat').length);
+  const totalMat = data.filter(d=>d.tipo==='mat').reduce((s,d)=>s+d.impTotal,0);
+  setText('exp-stat-total', '$'+numK(totalMat));
+  // % sobre CD de los conceptos seleccionados
+  let cdTotal = 0;
+  selected.forEach(a=>{
+    const qty = a.cantidad||1;
+    const mat = a.mat?a.mat.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0):0;
+    const mo  = a.mo ?a.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0):0;
+    const eq  = a.eq ?a.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0):0;
+    cdTotal += (mat+mo+eq)*qty;
+  });
+  const pct = cdTotal>0 ? Math.round(totalMat/cdTotal*100) : 0;
+  setText('exp-stat-pct', pct+'%');
+}
+
+function filterExplosion(){ renderExpTable(); }
+function filterExpType(type, el){
+  expFilter = type;
+  document.querySelectorAll('#page-explosion .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderExpTable();
+}
+
+// Número sin formato de moneda (para cantidades)
+function numRaw(v){ return (+v||0).toLocaleString('es-MX',{minimumFractionDigits:3,maximumFractionDigits:3}); }
+
+function exportExplosionCSV(){
+  if(!expData.length){ notify('Sin datos. Selecciona conceptos en el Concentrado.','error'); return; }
+  const p = db.proyecto;
+  let csv = `Explosión de Materiales — ${p.nombre||'Proyecto'}\n`;
+  csv += 'Clave,Descripción,Tipo,Unidad,Precio Unit.,Cantidad Total,Importe,Conceptos\n';
+  expData.forEach(i=>{
+    csv += `"${i.clave}","${i.desc}","${i.tipo}","${i.unidad}",${i.precio},${i.cantTotal.toFixed(3)},${i.impTotal.toFixed(2)},"${i.conceptos.join('|')}"\n`;
+  });
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Explosion_Materiales_${hoy()}.csv`;
+  a.click();
+  notify('CSV exportado ✓');
+}
+
+function exportExplosionExcel(){
+  if(!expData.length){ notify('Sin datos. Selecciona conceptos en el Concentrado.','error'); return; }
+  const p = db.proyecto;
+  const wb = XLSX.utils.book_new();
+
+  // ── Hoja 1: Todos los insumos ──
+  const header = ['Clave','Descripción','Tipo','Unidad','Precio Unitario','Cantidad Total','Importe','Conceptos que lo usan'];
+  const rows = expData.map(i=>[
+    i.clave, i.desc, i.tipo==='mat'?'Material':i.tipo==='mo'?'Mano de Obra':'Equipo',
+    i.unidad, i.precio, +i.cantTotal.toFixed(3), +i.impTotal.toFixed(2), i.conceptos.join(' | ')
+  ]);
+  const totalImp = expData.reduce((s,i)=>s+i.impTotal,0);
+  rows.push([]);
+  rows.push(['','','','','','TOTAL:',totalImp,'']);
+  const ws = XLSX.utils.aoa_to_sheet([header,...rows]);
+  ws['!cols'] = [{wch:12},{wch:50},{wch:12},{wch:8},{wch:14},{wch:14},{wch:14},{wch:40}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Todos los insumos');
+
+  // ── Hoja 2: Solo materiales ──
+  const mats = expData.filter(i=>i.tipo==='mat');
+  if(mats.length){
+    const wsMat = XLSX.utils.aoa_to_sheet([
+      ['Clave','Descripción','Unidad','Precio Unitario','Cantidad Total','Importe','Conceptos'],
+      ...mats.map(i=>[i.clave,i.desc,i.unidad,i.precio,+i.cantTotal.toFixed(3),+i.impTotal.toFixed(2),i.conceptos.join(' | ')]),
+      [],['','','','','TOTAL:',mats.reduce((s,i)=>s+i.impTotal,0),'']
+    ]);
+    wsMat['!cols'] = [{wch:12},{wch:50},{wch:8},{wch:14},{wch:14},{wch:14},{wch:40}];
+    XLSX.utils.book_append_sheet(wb, wsMat, 'Materiales');
+  }
+
+  // ── Hoja 3: Mano de obra ──
+  const mos = expData.filter(i=>i.tipo==='mo');
+  if(mos.length){
+    const wsMO = XLSX.utils.aoa_to_sheet([
+      ['Clave','Categoría','Unidad','Salario','Jornadas/hrs','Importe','Conceptos'],
+      ...mos.map(i=>[i.clave,i.desc,i.unidad,i.precio,+i.cantTotal.toFixed(3),+i.impTotal.toFixed(2),i.conceptos.join(' | ')]),
+    ]);
+    wsMO['!cols'] = [{wch:12},{wch:40},{wch:8},{wch:12},{wch:14},{wch:14},{wch:40}];
+    XLSX.utils.book_append_sheet(wb, wsMO, 'Mano de Obra');
+  }
+
+  // ── Portada ──
+  const info = XLSX.utils.aoa_to_sheet([
+    ['EXPLOSIÓN DE MATERIALES — CySlean APU'],[''],
+    ['Proyecto:', p.nombre||'—'],['Fecha:', hoy()],
+    ['Conceptos incluidos:', db.apus.filter(a=>propSelectedIds.has(a.id)).length],
+    ['Total materiales únicos:', mats.length],
+  ]);
+  XLSX.utils.book_append_sheet(wb, info, 'Portada');
+  wb.SheetNames = ['Portada','Todos los insumos','Materiales','Mano de Obra'].filter(n=>wb.SheetNames.includes(n) || wb.Sheets[n]);
+
+  XLSX.writeFile(wb, `Explosion_Materiales_${(p.nombre||'Proyecto').replace(/\s/g,'_')}_${hoy()}.xlsx`);
+  notify(`Explosión de materiales exportada ✓`);
+}
+
+
 let propSelectedIds = new Set();
 
 function syncPct(field, v){
