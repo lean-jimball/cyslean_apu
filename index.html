@@ -688,7 +688,7 @@ tr:hover td{background:rgba(0,212,255,0.03)}
       <div class="card-header" style="background:rgba(255,209,102,0.08);border-bottom-color:rgba(255,209,102,0.3)">
         <div class="card-title" style="color:var(--gold)">💰 Resumen de costos — <span style="color:var(--text3);font-size:11px;font-weight:400">🔒 Uso interno · no se imprime</span></div>
       </div>
-      <div class="card-body" style="display:grid;grid-template-columns:repeat(4,1fr) 1.2fr;gap:16px;align-items:start">
+      <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr 1.6fr 1fr;gap:16px;align-items:start">
 
         <!-- Col 1: Materiales/MO/EQ -->
         <div>
@@ -711,13 +711,10 @@ tr:hover td{background:rgba(0,212,255,0.03)}
           <div style="font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--gold)" id="int-margen">0%</div>
         </div>
 
-        <!-- Col 3: PU / IVA / Total -->
-        <div>
-          <div style="font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">Precio de venta</div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600"><span>P.U. s/IVA</span><span style="color:var(--accent);font-family:'IBM Plex Mono',monospace" id="int-pu">$0.00</span></div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px"><span style="color:var(--text2)">IVA <small id="int-iva-pct" style="color:var(--gold)">16%</small></span><span class="highlight" id="int-iva">$0.00</span></div>
-          <div class="divider"></div>
-          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700"><span style="color:var(--gold)">TOTAL c/IVA</span><span style="color:var(--gold);font-family:'IBM Plex Mono',monospace" id="int-total">$0.00</span></div>
+        <!-- Col 3: Desglose completo -->
+        <div style="grid-column:span 2">
+          <div style="font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">Desglose del costo</div>
+          <div id="int-desglose" style="font-size:12px;color:var(--text2)">—</div>
         </div>
 
         <!-- Col 4: Ajustar porcentajes -->
@@ -2782,7 +2779,7 @@ function renderPropuesta(){
       <td class="right" style="font-weight:700">$${num(impTotal)}</td>
     </tr>`;
   });
-  // Calcular desglose completo para el resumen
+  // ── Desglose completo (panel interno, no se imprime) ─────
   let cdMat=0, cdMO=0, cdEQ=0;
   selected.forEach(a=>{
     const qty = a.cantidad||1;
@@ -2790,60 +2787,67 @@ function renderPropuesta(){
     cdMO  += (a.mo  ? a.mo.reduce((s,r)=>s+(r.precio*(r.factor_mo||1))/(r.rendimiento||1),0) : 0) * qty;
     cdEQ  += (a.eq  ? a.eq.reduce((s,r)=>s+r.cantidad*(r.rendimiento||1)*r.precio,0) : 0) * qty;
   });
-  const cdTotal  = cdMat + cdMO + cdEQ;
-  const indAmt   = cdTotal * (p.indirectos||15)/100;
-  const finAmt   = cdTotal * (p.financiamiento||3)/100;
-  const utAmt    = cdTotal * (p.utilidad||8)/100;
-  const subtotalIFU = cdTotal + indAmt + finAmt + utAmt;
-  const ivaAmtFull  = subtotalIFU * ivaRate;
-  const totalFull   = subtotalIFU + ivaAmtFull;
+  const cdTotal    = cdMat + cdMO + cdEQ;
+  const indAmt     = cdTotal * (p.indirectos||15)/100;
+  const finAmt     = cdTotal * (p.financiamiento||3)/100;
+  const utAmt      = cdTotal * (p.utilidad||8)/100;
+  const subIFU     = cdTotal + indAmt + finAmt + utAmt;
+  const ivaAmtFull = subIFU * ivaRate;
+  const totalFull  = subIFU + ivaAmtFull;
 
-  let totalesHtml=`
-    <div style="background:#f8fafc;border-radius:8px;padding:16px 20px;min-width:320px;border:1px solid #e2eaf0">
-      <div style="font-size:11px;font-weight:700;color:#0a0e1a;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-        <span>📋</span> Desglose del Costo Total
+  // Lo que ve el cliente: solo el total final (limpio)
+  const clientTotalHtml = `
+    <div class="prop-total-row" style="padding:10px 0 0;font-size:16px;font-weight:700;border-top:2px solid #0a0e1a">
+      <span>TOTAL${showIva?' c/IVA':''}</span>
+      <span style="font-family:'Courier New',monospace">$${num(showIva?totalFull:subIFU)}</span>
+    </div>`;
+
+  // Desglose completo para el panel interno (no imprimible)
+  const desgloseHtml = `
+    <div style="font-size:12px">
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--accent)">Costo Directo Materiales:</span>
+        <span class="highlight">$${num(cdMat)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #e8edf5">
-        <span style="color:#4a5568">Costo Directo Materiales:</span>
-        <span style="font-family:'Courier New',monospace;color:#0070c0">$${num(cdMat)}</span>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--accent3)">Costo Directo Mano de Obra:</span>
+        <span class="highlight">$${num(cdMO)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #e8edf5">
-        <span style="color:#4a5568">Costo Directo Mano de Obra:</span>
-        <span style="font-family:'Courier New',monospace;color:#00805a">$${num(cdMO)}</span>
+      <div style="display:flex;justify-content:space-between;padding:4px 0 8px;border-bottom:2px solid var(--border2)">
+        <span style="color:var(--accent2)">Herramienta y Equipo:</span>
+        <span class="highlight">$${num(cdEQ)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0 10px;font-size:12px;border-bottom:2px solid #0a0e1a">
-        <span style="color:#4a5568">Herramienta y Equipo:</span>
-        <span style="font-family:'Courier New',monospace;color:#cc5500">$${num(cdEQ)}</span>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;font-weight:700;border-bottom:1px solid var(--border)">
+        <span>SUBTOTAL DIRECTO:</span><span class="highlight">$${num(cdTotal)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;font-weight:700;border-bottom:1px solid #e8edf5">
-        <span>SUBTOTAL DIRECTO:</span>
-        <span style="font-family:'Courier New',monospace">$${num(cdTotal)}</span>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--text2)">Indirectos (${p.indirectos||15}%):</span>
+        <span class="highlight">$${num(indAmt)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #e8edf5">
-        <span style="color:#4a5568">Indirectos (${p.indirectos||15}%):</span>
-        <span style="font-family:'Courier New',monospace">$${num(indAmt)}</span>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--text2)">Financiamiento (${p.financiamiento||3}%):</span>
+        <span class="highlight">$${num(finAmt)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid #e8edf5">
-        <span style="color:#4a5568">Financiamiento (${p.financiamiento||3}%):</span>
-        <span style="font-family:'Courier New',monospace">$${num(finAmt)}</span>
+      <div style="display:flex;justify-content:space-between;padding:4px 0 8px;border-bottom:2px solid var(--border2)">
+        <span style="color:var(--text2)">Utilidad (${p.utilidad||8}%):</span>
+        <span class="highlight">$${num(utAmt)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0 10px;font-size:12px;border-bottom:2px solid #0a0e1a">
-        <span style="color:#4a5568">Utilidad (${p.utilidad||8}%):</span>
-        <span style="font-family:'Courier New',monospace">$${num(utAmt)}</span>
+      <div style="display:flex;justify-content:space-between;padding:7px 0;font-weight:700;border-bottom:1px solid var(--border)">
+        <span>SUBTOTAL ANTES DE IVA:</span><span class="highlight">$${num(subIFU)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;font-weight:700;border-bottom:1px solid #e8edf5">
-        <span>SUBTOTAL ANTES DE IVA:</span>
-        <span style="font-family:'Courier New',monospace">$${num(subtotalIFU)}</span>
+      <div style="display:flex;justify-content:space-between;padding:4px 0 8px;border-bottom:2px solid var(--border2)">
+        <span style="color:var(--text2)">IVA (${p.iva||16}%):</span>
+        <span class="highlight">$${num(ivaAmtFull)}</span>
       </div>
-      ${showIva ? `<div style="display:flex;justify-content:space-between;padding:4px 0 10px;font-size:12px;border-bottom:2px solid #0a0e1a">
-        <span style="color:#4a5568">IVA (${p.iva||16}%):</span>
-        <span style="font-family:'Courier New',monospace">$${num(ivaAmtFull)}</span>
-      </div>` : ''}
-      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:16px;font-weight:700">
-        <span>TOTAL:</span>
-        <span style="font-family:'Courier New',monospace;color:#0a0e1a">$${num(showIva?totalFull:subtotalIFU)}</span>
+      <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:14px;font-weight:700">
+        <span style="color:var(--gold)">TOTAL:</span>
+        <span style="color:var(--gold);font-family:'IBM Plex Mono',monospace">$${num(totalFull)}</span>
       </div>
     </div>`;
+
+  // Actualizar panel interno con el desglose
+  const desgloseEl = document.getElementById('int-desglose');
+  if(desgloseEl) desgloseEl.innerHTML = desgloseHtml;
 
   preview.innerHTML=`
   <div class="prop-header">
@@ -2883,7 +2887,7 @@ function renderPropuesta(){
         <thead><tr>${thClave}<th>Descripción del concepto</th><th class="right" style="width:55px">Unidad</th><th class="right" style="width:55px">Cantidad</th><th class="right" style="width:105px;color:#0070c0">P.U. Mat.</th><th class="right" style="width:105px;color:#00805a">P.U. M.O.</th><th class="right" style="width:110px;color:#ffd166">Importe</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div class="prop-totals"><div class="prop-totals-box">${totalesHtml}</div></div>
+      <div class="prop-totals"><div class="prop-totals-box">${clientTotalHtml}</div></div>
     </div>
     <div class="prop-section">
       <div class="prop-section-title">Condiciones</div>
